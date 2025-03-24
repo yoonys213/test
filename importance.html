@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>불확도의 중요성</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            height: 100vh;
+            background: url('assets/bg-importance.jpg') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .back-btn {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: rgba(0,0,0,0.3);
+            width: clamp(50px, 10vw, 70px);
+            height: clamp(50px, 10vw, 70px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        .back-btn:hover {
+            background: rgba(0,0,0,0.5);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        /* 모바일 세로 대응 */
+        @media (orientation: portrait) and (max-width: 768px) {
+            body {
+                background-size: auto 120%;
+            }
+            .back-btn {
+                left: 10px;
+                top: 40%;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">〈</button>
+</body>
+</html>
