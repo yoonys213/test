@@ -2,66 +2,119 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>불확도란?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>불확도</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;900&display=swap');
         
         body {
-            height: 100vh;
-            background: url('assets/bg-uncertainty.jpg') no-repeat center center;
-            background-size: cover;
-            background-attachment: fixed;
+            background-color: #242BA6;
+            color: white;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
             position: relative;
-            overflow: hidden;
+        }
+        
+        .content {
+            padding: 5%;
+            width: 90%;
+            max-width: 800px;
+            text-align: left;
+        }
+        
+        h1 {
+            font-size: clamp(40px, 10vw, 90px);
+            margin: 0 0 3vh 0;
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .pronunciation {
+            font-size: clamp(16px, 3vw, 26px);
+            margin-bottom: 5vh;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+        
+        p {
+            font-size: clamp(16px, 3.5vw, 22px);
+            line-height: 1.7;
+            margin: 3vh 0;
+            font-weight: 300;
+        }
+        
+        .emphasis {
+            font-weight: 400;
         }
         
         .back-btn {
-            position: fixed;
-            left: 20px;
+            position: absolute;
+            left: 3vw;
             top: 50%;
             transform: translateY(-50%);
             color: white;
             font-size: clamp(40px, 8vw, 60px);
             font-weight: 900;
             cursor: pointer;
-            background: rgba(0,0,0,0.3);
-            width: clamp(50px, 10vw, 70px);
-            height: clamp(50px, 10vw, 70px);
-            border-radius: 50%;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
             z-index: 10;
             border: none;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         
         .back-btn:hover {
-            background: rgba(0,0,0,0.5);
-            transform: translateY(-50%) scale(1.1);
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
         }
         
-        /* 모바일 세로 대응 */
-        @media (orientation: portrait) and (max-width: 768px) {
-            body {
-                background-size: auto 120%;
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 8%;
             }
             .back-btn {
-                left: 10px;
-                top: 40%;
+                left: 2vw;
+                font-size: clamp(30px, 8vw, 50px);
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='index.html'">〈</button>
+    <button class="back-btn" onclick="location.href='로비.html'"></button>
+    
+    <div class="content">
+        <h1>불확도</h1>
+        <div class="pronunciation">/uncertainty/</div>
+        
+        <p>측정을 할 때 측정환경이나 측정계기의 분해능에 의한 측정 한계 등으로<br>
+        측정값은 항상 불확실성을 갖게 된다.</p>
+        
+        <p>그 불확실한 정도를 <span class="emphasis">'불확도'</span> 라고하며<br>
+        표준편차, 표준오차 또는 경험이나 다른 정보에 근거하여 가정한 확률분포로부터 값을 결정한다.</p>
+        
+        <p>측정 결과는 <span class="emphasis">'측정값 ± 불확도(단위)'</span>로 표현한다.<br>
+        모든 측정에는 오차(불확도)가 존재하며 아무리 조심해도 없앨 수 없다.</p>
+    </div>
 </body>
 </html>
