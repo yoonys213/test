@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>불확도 계산기</title>
     <style>
         * {
             margin: 0;
@@ -14,48 +14,30 @@
         
         body {
             height: 100vh;
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: url('assets/bg-main.jpg') no-repeat center center;
+            background: url('로비 백그라운드.png') no-repeat center center;
             background-size: cover;
-            background-attachment: fixed;
             position: relative;
-            overflow: hidden;
         }
         
-        
-        
-        .title {
-            color: white;
-            font-size: clamp(28px, 6vw, 42px);
-            margin-bottom: clamp(20px, 8vh, 60px);
-            text-align: center;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            padding: 0 20px;
-        }
-        
-        .button-container {
-            display: flex;
-            flex-direction: column;
-            gap: clamp(15px, 3vh, 25px);
-            width: 90%;
-            max-width: 400px;
-        }
-        
+        /* 배경 위에 직접 배치되는 버튼들 */
         .btn {
-            padding: clamp(14px, 3vh, 18px) 0;
-            font-size: clamp(16px, 4vw, 20px);
+            padding: 18px 40px;
+            font-size: 20px;
             font-weight: bold;
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            width: 100%;
+            margin-bottom: 20px;
             transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 280px;
             text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
         
         .btn-calculator { background-color: #040077; }
@@ -64,27 +46,46 @@
         
         .btn:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
         }
-
-        /* 모바일 세로 전용 스타일 */
-        @media (orientation: portrait) and (max-width: 768px) {
-            body {
-                background-size: auto 120%;
-            }
-            .button-container {
-                margin-top: 10vh;
-            }
+        
+        /* 제목 스타일 */
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <h1 class="title">불확도 계산기</h1>
     
-    <div class="button-container">
-        <button class="btn btn-calculator" onclick="location.href='calculator.html'">불확도 계산기</button>
-        <button class="btn btn-about" onclick="location.href='uncertainty.html'">불확도란?</button>
-        <button class="btn btn-importance" onclick="location.href='importance.html'">불확도가 왜 중요할까?</button>
-    </div>
+    <button class="btn btn-calculator" onclick="openCalculatorSelection()">불확도 계산기</button>
+    <button class="btn btn-about" onclick="location.href='불확도란.html'">불확도란?</button>
+    <button class="btn btn-importance" onclick="location.href='불확도중요.html'">불확도가 왜 중요할까?</button>
+
+    <script>
+        // 계산기 선택창 열기 함수
+        function openCalculatorSelection() {
+            // 현재 창을 닫고 새 창으로 이동
+            window.open('계산기선택창.html', '_self');
+            window.close(); // 일부 브라우저에서는 보안상의 이유로 작동하지 않을 수 있음
+        }
+
+        // 대안: 현재 창에서 이동 (대부분의 경우 이 방법 사용)
+        function openCalculatorSelection() {
+            window.location.href = 'calculsel.html';
+        }
+
+        // 배경 이미지 로드 실패시 대체 배경
+        document.body.onerror = function() {
+            document.body.style.background = `
+                linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)
+            `;
+        };
+    </script>
 </body>
 </html>
