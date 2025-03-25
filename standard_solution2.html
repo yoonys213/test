@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>표준용액 제조</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+            overflow: hidden;
+        }
+        
+        body {
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            background-color: #020873;
+            padding-top: 50px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 750px;
+            margin-top: 30px;
+        }
+        
+        .header {
+            width: 100%;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 70px;
+            font-weight: 1000;
+            color: white;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            line-height: 1.1;
+            margin-bottom: 15px;
+            white-space: nowrap;
+        }
+        
+        .instruction {
+            font-size: 28px;
+            color: white;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-top: 30px;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 140px;
+            margin-bottom: 40px;
+            justify-content: center;
+            width: 100%;
+            padding-top: 30px;
+        }
+        
+        .volume-btn {
+            width: 115px;
+            height: 115px;
+            border-radius: 50%;
+            border: none;
+            background-color: white;
+            color: #020873;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+            position: relative;
+            top: 0;
+        }
+        
+        .volume-btn:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+        
+        .volume-btn.selected {
+            background-color: #0033E7;
+            color: white;
+            box-shadow: 0 0 0 3px white;
+        }
+        
+        .uncertainty-container {
+            display: flex;
+            gap: 140px;
+            justify-content: center;
+            width: 100%;
+            margin-top: 40px;
+        }
+        
+        .uncertainty-label {
+            width: 115px;
+            text-align: center;
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <h1 class="title">표준용액 제조</h1>
+            <p class="instruction">2) 사용한 전자저울을 선택하세요</p>
+        </div>
+        
+        <div class="button-container">
+            <button class="volume-btn" onclick="selectBalance('세자리수', this)">세자리수</button>
+            <button class="volume-btn" onclick="selectBalance('네자리수', this)">네자리수</button>
+        </div>
+        
+        <div class="uncertainty-container">
+            <div class="uncertainty-label">불확도</div>
+            <div class="uncertainty-label">불확도</div>
+        </div>
+    </div>
+
+    <script>
+        // 전자저울 선택 함수
+        function selectBalance(balanceType, element) {
+            // 모든 버튼에서 selected 클래스 제거
+            document.querySelectorAll('.volume-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 선택한 버튼에 스타일 적용
+            element.classList.add('selected');
+            
+            // localStorage에 선택값 저장
+            localStorage.setItem('selectedBalance', balanceType);
+            
+            // 0.5초 후 다음 페이지로 이동 (시각적 피드백을 위해)
+            setTimeout(() => {
+                const volume = localStorage.getItem('standardSolutionVolume');
+                window.location.href = 'standard_solution3.html';
+            }, 500);
+        }
+
+        // 페이지 로드 시 기존 선택값 표시
+        window.onload = function() {
+            const selectedBalance = localStorage.getItem('selectedBalance');
+            if(selectedBalance) {
+                const buttons = document.querySelectorAll('.volume-btn');
+                buttons.forEach(btn => {
+                    if(btn.textContent.includes(selectedBalance)) {
+                        btn.classList.add('selected');
+                    }
+                });
+            }
+        };
+    </script>
+</body>
+</html>
