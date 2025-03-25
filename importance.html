@@ -35,7 +35,7 @@
         }
         
         h1 {
-            font-size: min(8vh, 10vw);
+            font-size: min(9vh, 11vw); /* 가로 모드에서 크기 증가 */
             margin: 0 0 2vh 0;
             font-weight: 900;
             letter-spacing: -1px;
@@ -44,7 +44,7 @@
         }
         
         h2 {
-            font-size: min(2.5vh, 3.5vw);
+            font-size: min(3vh, 4vw); /* 가로 모드에서 크기 증가 */
             margin-bottom: 3vh;
             opacity: 0.9;
             font-weight: 400;
@@ -52,7 +52,7 @@
         }
         
         p {
-            font-size: min(2.5vh, 3.5vw);
+            font-size: min(3vh, 4vw); /* 가로 모드에서 크기 증가 */
             line-height: 1.5;
             margin: 2vh 0;
             font-weight: 300;
@@ -91,10 +91,26 @@
             line-height: 1;
         }
 
+        /* 가로 모드 전용 스타일 */
+        @media (orientation: landscape) {
+            h1 {
+                font-size: min(10vh, 12vw); /* 가로 모드에서 더 큰 크기 */
+            }
+            
+            h2 {
+                font-size: min(3.5vh, 4.5vw); /* 가로 모드에서 더 큰 크기 */
+            }
+            
+            p {
+                font-size: min(3.5vh, 4.5vw); /* 가로 모드에서 더 큰 크기 */
+                line-height: 1.6;
+            }
+        }
+
         /* 세로 모드 전용 스타일 */
         @media (orientation: portrait) {
             .content {
-                padding: 3vh 15vw 3vh 20vw; /* 왼쪽 패딩 증가 */
+                padding: 3vh 15vw 3vh 20vw;
             }
             
             h1 {
