@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>불확도</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;900&display=swap');
@@ -13,27 +13,31 @@
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            position: relative;
+            position: fixed;
+            overflow: hidden;
         }
         
         .content {
-            padding: 5%;
-            width: 90%;
+            padding: 5vh 10vw;
+            width: 100%;
             max-width: 800px;
             text-align: left;
             position: relative;
-            z-index: 1; /* 콘텐츠 레이어를 버튼 위로 */
+            z-index: 1;
+            box-sizing: border-box;
+            transform: scale(0.9);
         }
         
         h1 {
-            font-size: clamp(40px, 10vw, 90px);
-            margin: 0 0 3vh 0;
+            font-size: min(10vh, 12vw);
+            margin: 0 0 2vh 0;
             font-weight: 900;
             letter-spacing: -1px;
             line-height: 1;
@@ -41,16 +45,16 @@
         }
         
         .pronunciation {
-            font-size: clamp(16px, 3vw, 26px);
-            margin-bottom: 5vh;
+            font-size: min(3vh, 4vw);
+            margin-bottom: 4vh;
             opacity: 0.8;
             font-weight: 300;
         }
         
         p {
-            font-size: clamp(16px, 3.5vw, 22px);
-            line-height: 1.7;
-            margin: 3vh 0;
+            font-size: min(3vh, 4vw);
+            line-height: 1.5;
+            margin: 2.5vh 0;
             font-weight: 300;
         }
         
@@ -59,22 +63,22 @@
         }
         
         .back-btn {
-            position: fixed; /* absolute에서 fixed로 변경 */
-            left: 2vw;
+            position: absolute;
+            left: 5vw;
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: clamp(30px, 6vw, 50px); /* 크기 조정 */
+            font-size: min(8vh, 10vw);
             font-weight: 900;
             cursor: pointer;
             background: transparent;
-            width: clamp(40px, 8vw, 60px);
-            height: clamp(40px, 8vw, 60px);
+            width: min(8vh, 10vw);
+            height: min(8vh, 10vw);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            z-index: 2; /* 버튼 레이어를 콘텐츠 위로 */
+            z-index: 2;
             border: none;
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -94,33 +98,36 @@
         /* 세로 모드 전용 스타일 */
         @media (orientation: portrait) {
             .content {
-                padding-left: 15%; /* 왼쪽 패딩 추가 */
-                margin-left: 5vw; /* 콘텐츠 오른쪽으로 이동 */
+                padding: 5vh 15vw;
+                transform: scale(0.85);
             }
             
             .back-btn {
                 left: 3vw;
-                font-size: clamp(25px, 5vw, 40px);
-                width: clamp(30px, 6vw, 50px);
-                height: clamp(30px, 6vw, 50px);
+                font-size: min(7vh, 8vw);
             }
         }
 
         /* 매우 작은 화면 대응 */
-        @media (max-width: 480px) {
+        @media (max-height: 600px) {
             .content {
-                padding-left: 20%;
-                margin-left: 0;
+                transform: scale(0.8);
+                padding: 2vh 15vw;
             }
             
-            .back-btn {
-                left: 2vw;
+            h1 {
+                margin-bottom: 1vh;
+            }
+            
+            p {
+                margin: 1.5vh 0;
+                line-height: 1.4;
             }
         }
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='index.html'"></button>
+    <button class="back-btn" onclick="location.href='로비.html'"></button>
     
     <div class="content">
         <h1>불확도</h1>
