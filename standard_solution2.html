@@ -83,15 +83,10 @@
             top: 0;
         }
         
+        /* 호버 효과만 유지 (선택 효과는 제거) */
         .volume-btn:hover {
-            transform: translateY(-20px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-        
-        .volume-btn.selected {
-            background-color: #0033E7;
-            color: white;
-            box-shadow: 0 0 0 3px white;
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         
         .uncertainty-container {
@@ -119,8 +114,8 @@
         </div>
         
         <div class="button-container">
-            <button class="volume-btn" onclick="selectBalance('세자리수', this)">세자리수</button>
-            <button class="volume-btn" onclick="selectBalance('네자리수', this)">네자리수</button>
+            <button class="volume-btn" onclick="selectBalance('세자리수')">세자리수</button>
+            <button class="volume-btn" onclick="selectBalance('네자리수')">네자리수</button>
         </div>
         
         <div class="uncertainty-container">
@@ -130,38 +125,11 @@
     </div>
 
     <script>
-        // 전자저울 선택 함수
-        function selectBalance(balanceType, element) {
-            // 모든 버튼에서 selected 클래스 제거
-            document.querySelectorAll('.volume-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            // 선택한 버튼에 스타일 적용
-            element.classList.add('selected');
-            
-            // localStorage에 선택값 저장
+        // 전자저울 선택 함수 (순수하게 값만 저장)
+        function selectBalance(balanceType) {
             localStorage.setItem('selectedBalance', balanceType);
-            
-            // 0.5초 후 다음 페이지로 이동 (시각적 피드백을 위해)
-            setTimeout(() => {
-                const volume = localStorage.getItem('standardSolutionVolume');
-                window.location.href = 'standard_solution3.html';
-            }, 500);
+            window.location.href = 'standard_solution3.html';
         }
-
-        // 페이지 로드 시 기존 선택값 표시
-        window.onload = function() {
-            const selectedBalance = localStorage.getItem('selectedBalance');
-            if(selectedBalance) {
-                const buttons = document.querySelectorAll('.volume-btn');
-                buttons.forEach(btn => {
-                    if(btn.textContent.includes(selectedBalance)) {
-                        btn.classList.add('selected');
-                    }
-                });
-            }
-        };
     </script>
 </body>
 </html>
