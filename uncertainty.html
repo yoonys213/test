@@ -27,6 +27,8 @@
             width: 90%;
             max-width: 800px;
             text-align: left;
+            position: relative;
+            z-index: 1; /* 콘텐츠 레이어를 버튼 위로 */
         }
         
         h1 {
@@ -57,22 +59,22 @@
         }
         
         .back-btn {
-            position: absolute;
-            left: 3vw;
+            position: fixed; /* absolute에서 fixed로 변경 */
+            left: 2vw;
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: clamp(40px, 8vw, 60px);
+            font-size: clamp(30px, 6vw, 50px); /* 크기 조정 */
             font-weight: 900;
             cursor: pointer;
             background: transparent;
-            width: clamp(50px, 10vw, 80px);
-            height: clamp(50px, 10vw, 80px);
+            width: clamp(40px, 8vw, 60px);
+            height: clamp(40px, 8vw, 60px);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            z-index: 10;
+            z-index: 2; /* 버튼 레이어를 콘텐츠 위로 */
             border: none;
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -89,19 +91,36 @@
             line-height: 1;
         }
 
-        @media (max-width: 768px) {
+        /* 세로 모드 전용 스타일 */
+        @media (orientation: portrait) {
             .content {
-                padding: 8%;
+                padding-left: 15%; /* 왼쪽 패딩 추가 */
+                margin-left: 5vw; /* 콘텐츠 오른쪽으로 이동 */
             }
+            
+            .back-btn {
+                left: 3vw;
+                font-size: clamp(25px, 5vw, 40px);
+                width: clamp(30px, 6vw, 50px);
+                height: clamp(30px, 6vw, 50px);
+            }
+        }
+
+        /* 매우 작은 화면 대응 */
+        @media (max-width: 480px) {
+            .content {
+                padding-left: 20%;
+                margin-left: 0;
+            }
+            
             .back-btn {
                 left: 2vw;
-                font-size: clamp(30px, 8vw, 50px);
             }
         }
     </style>
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='index.html'"></button>
+    <button class="back-btn" onclick="location.href='로비.html'"></button>
     
     <div class="content">
         <h1>불확도</h1>
