@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>계산기 선택</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        
+        body {
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #DAECFE;
+        }
+        
+        /* 제목 스타일 */
+        .title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            color: #0033E7;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        
+        /* 버튼 컨테이너 */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        /* 실험 선택 버튼들 */
+        .exp-btn {
+            padding: 18px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .exp-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
+        
+        /* 버튼 색상 설정 */
+        .btn-standard { background-color: #0033E7; }
+        .btn-standard:hover { background-color: #020873; }
+        
+        .btn-dilution { background-color: #2E6FF2; }
+        .btn-dilution:hover { background-color: #030BA6; }
+        
+        .btn-titration { background-color: #5C8EF2; }
+        .btn-titration:hover { background-color: #1E28D9; }
+        
+        .btn-custom { background-color: #80A6F2; }
+        .btn-custom:hover { background-color: #417CF2; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="button-container">
+        <button class="exp-btn btn-standard" onclick="location.href='standard_solution.html'">표준용액 제조</button>
+        <button class="exp-btn btn-dilution" onclick="location.href='dilution.html'">희석</button>
+        <button class="exp-btn btn-titration" onclick="location.href='titration.html'">중화적정</button>
+        <button class="exp-btn btn-custom" onclick="location.href='custom_calculation.html'">직접 계산식 입력하기</button>
+    </div>
+</body>
+</html>
