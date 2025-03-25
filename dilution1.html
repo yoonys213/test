@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>희석 배수 입력</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background-color: #030BA6;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 전체 요소 중앙 정렬 */
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+        }
+        .title {
+            font-size: 150px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-align: left; /* 제목만 왼쪽 정렬 */
+            margin-left: 260px; /* 왼쪽 여백 추가 (조절 가능) */
+        }
+        .prompt {
+            font-size: 30px;
+            margin-bottom: 40px;
+            text-align: left; /* 설명 텍스트만 왼쪽 정렬 */
+            margin-left: 260px; /* 왼쪽 여백 추가 (조절 가능) */
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 입력창은 중앙 유지 */
+            margin-bottom: 40px;
+        }
+        input {
+            width: 450px;
+            padding: 30px;
+            font-size: 100px;
+            text-align: right;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            margin-right: 20px;
+        }
+        .unit {
+            font-size: 150px;
+        }
+        .submit-btn {
+            padding: 30px 60px;
+            font-size: 40px;
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto; /* 버튼 중앙 정렬 */
+        }
+        .submit-btn:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">희석</div>
+        <div class="prompt">1) 몇 배 희석했는지 입력해주세요</div>
+        <div class="input-group">
+            <input type="number" id="dilutionFactor" min="1" value="1">
+            <span class="unit">배</span>
+        </div>
+        <button class="submit-btn" onclick="submitDilution()">입력 완료</button>
+    </div>
+
+    <script>
+        const dilutionInput = document.getElementById('dilutionFactor');
+        let dilutionFactor = 1;
+
+        dilutionInput.addEventListener('input', function() {
+            dilutionFactor = parseInt(this.value) || 1;
+            console.log("현재 희석 배수: ", dilutionFactor + "배");
+        });
+
+        function submitDilution() {
+            localStorage.setItem('dilutionFactor', dilutionFactor);
+            window.location.href = "dilution2.html";
+        }
+    </script>
+</body>
+</html>
