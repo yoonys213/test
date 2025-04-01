@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>과학적 불확도 계산기</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .calculator-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            gap: 20px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .display-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .box {
+            background-color: #e6f2ff;
+            border: 1px solid #b3d1ff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #cce0ff;
+            padding-bottom: 10px;
+        }
+        .input-box {
+            min-height: 80px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 1.1em;
+            border: 1px solid #d9e7ff;
+        }
+        #calculation-process {
+            white-space: pre-wrap;
+            word-break: break-all;
+            text-align: left;
+            font-family: 'Arial', sans-serif;
+        }
+        .calculator {
+            width: 350px;
+            background-color: #e6f2ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #screen {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            text-align: center;
+            border: 1px solid #d9e7ff;
+        }
+        #screen input {
+            width: 70px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        button {
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.3em;
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+        button:hover {
+            background-color: #357abd;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="display-panel">
+            <div class="box">
+                <h3>계산 과정</h3>
+                <div id="calculation-process" class="input-box"></div>
+            </div>
+            <div class="box">
+                <h3>결과</h3>
+                <div id="result" class="input-box"></div>
+            </div>
+        </div>
+        <div class="calculator">
+            <div id="screen">
+                ( <input type="number" id="value" step="any" placeholder="값"> ) ± 
+                ( <input type="number" id="uncertainty" step="any" placeholder="불확도"> )
+            </div>
+            <div class="buttons">
+                <button onclick="appendOperation('+')">+</button>
+                <button onclick="appendOperation('-')">-</button>
+                <button onclick="appendOperation('×')">×</button>
+                <button onclick="appendOperation('÷')">÷</button>
+                
+                <button onclick="setUncertainty(0.001)">0.001</button>
+                <button onclick="setUncertainty(0.01)">0.01</button>
+                <button onclick="clearAll()">C</button>
+                <button onclick="calculate()">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let values = [];
+        let uncertainties = [];
+        let operations = [];
+        let calculationHistory = "";
+        let lastResult = null;
+        
+        function appendOperation(op) {
+            let value = document.getElementById("value").value;
+            let uncertainty = document.getElementById("uncertainty").value;
+            
+            if (value === "" || uncertainty === "") {
+                if (lastResult && op) {
+                    calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
+                    values = [lastResult.value];
+                    uncertainties = [lastResult.uncertainty];
+                    operations = [op];
+                    lastResult = null;
+                    document.getElementById("calculation-process").innerText = calculationHistory;
+                }
+                return;
+            }
+            
+            if (lastResult) {
+                calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
+                values = [lastResult.value];
+                uncertainties = [lastResult.uncertainty];
+                lastResult = null;
+            } else {
+                if (calculationHistory === "") {
+                    calculationHistory = `(${value} ± ${uncertainty}) ${op} `;
+                } else {
+                    calculationHistory += `(${value} ± ${uncertainty}) ${op} `;
+                }
+                values.push(parseFloat(value));
+                uncertainties.push(parseFloat(uncertainty));
+            }
+            operations.push(op);
+            
+            document.getElementById("calculation-process").innerText = calculationHistory;
+            clearInputs();
+        }
+
+        function calculate() {
+            let value = document.getElementById("value").value;
+            let uncertainty = document.getElementById("uncertainty").value;
+            
+            if (value !== "" && uncertainty !== "") {
+                values.push(parseFloat(value));
+                uncertainties.push(parseFloat(uncertainty));
+                calculationHistory += `(${value} ± ${uncertainty})`;
+                document.getElementById("calculation-process").innerText = calculationHistory;
+            }
+            
+            if (values.length < 2 || operations.length < 1) return;
+            
+            let tempValues = [...values];
+            let tempUncertainties = [...uncertainties];
+            let tempOperations = [...operations];
+            
+            // 곱셈/나눗셈 먼저 계산 (기호를 ×와 ÷로 처리)
+            for (let i = 0; i < tempOperations.length; i++) {
+                const op = tempOperations[i];
+                if (op === '×' || op === '÷') {
+                    const a = tempValues[i];
+                    const b = tempValues[i+1];
+                    const ua = tempUncertainties[i];
+                    const ub = tempUncertainties[i+1];
+                    
+                    let newValue, newUncertainty;
+                    if (op === '×') {
+                        newValue = a * b;
+                        newUncertainty = (ua/Math.abs(a) + ub/Math.abs(b)) * Math.abs(newValue);
+                    } else {
+                        newValue = a / b;
+                        newUncertainty = (ua/Math.abs(a) + ub/Math.abs(b)) * Math.abs(newValue);
+                    }
+                    
+                    tempValues.splice(i, 2, newValue);
+                    tempUncertainties.splice(i, 2, newUncertainty);
+                    tempOperations.splice(i, 1);
+                    i--;
+                }
+            }
+            
+            // 덧셈/뺄셈 계산
+            let resultValue = tempValues[0];
+            let resultUncertainty = tempUncertainties[0];
+            
+            for (let i = 0; i < tempOperations.length; i++) {
+                const op = tempOperations[i];
+                const nextValue = tempValues[i+1];
+                const nextUncertainty = tempUncertainties[i+1];
+                
+                if (op === '+') {
+                    resultValue += nextValue;
+                } else {
+                    resultValue -= nextValue;
+                }
+                resultUncertainty += nextUncertainty;
+            }
+            
+            resultValue = Math.round(resultValue * 100000) / 100000;
+            resultUncertainty = Math.round(resultUncertainty * 100000) / 100000;
+            
+            lastResult = {
+                value: resultValue,
+                uncertainty: resultUncertainty
+            };
+            document.getElementById("result").innerText = `(${resultValue} ± ${resultUncertainty})`;
+            clearInputs();
+        }
+
+        function setUncertainty(value) {
+            document.getElementById("uncertainty").value = value;
+        }
+
+        function clearInputs() {
+            document.getElementById("value").value = "";
+            document.getElementById("uncertainty").value = "";
+        }
+
+        function clearAll() {
+            values = [];
+            uncertainties = [];
+            operations = [];
+            calculationHistory = "";
+            lastResult = null;
+            document.getElementById("calculation-process").innerText = "";
+            document.getElementById("result").innerText = "";
+            clearInputs();
+        }
+    </script>
+</body>
+</html>

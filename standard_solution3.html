@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>표준용액 제조</title>
+    <style>
+        body {
+            background-color: #000080;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .input-box {
+            display: inline-block;
+            border: 2px dashed white;
+            padding: 10px;
+            width: 300px;
+            text-align: center;
+            background-color: white;
+            color: black;
+            font-size: 36px;
+        }
+        .uncertainty {
+            display: inline-block;
+            padding-left: 10px;
+            font-size: 64px;
+        }
+        .large-text {
+            font-size: 96px;
+            font-weight: 900;
+        }
+        .button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 32px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="large-text">표준용액 제조</h1>
+        <p style="font-size: 24px;">3) 사용한 용질의 양을 입력하세요</p>
+        <input type="text" id="soluteAmount" class="input-box" placeholder="용질의 양 입력">
+        <span class="uncertainty">± <span id="uncertaintyValue"></span></span>
+        <br>
+        <button class="button" onclick="checkInput()">입력 확인</button>
+    </div>
+
+    <script>
+        // 용질의 양 저장 변수
+        const soluteAmountKey = "soluteAmount";
+        
+        // 입력한 용질의 양을 localStorage에 저장
+        document.getElementById("soluteAmount").addEventListener("input", function() {
+            localStorage.setItem(soluteAmountKey, this.value);
+        });
+
+        // localStorage에서 balanceUncertainty 값을 가져와 표시
+        const balanceUncertainty = localStorage.getItem("balanceUncertainty") || "0.0001";
+        document.getElementById("uncertaintyValue").innerText = balanceUncertainty;
+        
+        // 저울의 종류 변수 초기화
+        let scaleType = "";
+        
+        // balanceUncertainty 값 확인 및 처리
+        console.log("선택한 저울의 불확도:", balanceUncertainty);
+        if(balanceUncertainty === "0.001") {
+            console.log("세자리수 저울이 선택되었습니다.");
+            scaleType = "세자리수 저울";
+        } else if(balanceUncertainty === "0.0001") {
+            console.log("네자리수 저울이 선택되었습니다.");
+            scaleType = "네자리수 저울";
+        } else {
+            alert("저울을 선택하지 않았습니다!");
+        }
+
+        // 입력 확인 버튼 동작
+        function checkInput() {
+            const soluteAmount = localStorage.getItem(soluteAmountKey);
+            if (!soluteAmount || soluteAmount.trim() === "") {
+                alert("용질의 양을 입력하세요!");
+                return;
+            }
+            localStorage.setItem("soluteAmount", soluteAmount);
+            window.location.href = "standard_solution4.html";
+        }
+    </script>
+</body>
+</html>

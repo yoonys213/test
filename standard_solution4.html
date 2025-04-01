@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>표준용액 제조 - 계산 결과</title>
+    <style>
+        body {
+            background-color: #000080;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .title {
+            font-size: 60px;
+            font-weight: 900;
+            margin-top: 50px;
+        }
+        .content {
+            font-size: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">표준용액 제조</div>
+    <div class="content" id="calculation"></div>
+    <script>
+        // localStorage에서 데이터 불러오기
+        const soluteMass = localStorage.getItem('soluteMass'); // 용질의 양
+        const balanceUncertainty = localStorage.getItem('balanceUncertainty'); // 저울의 불확도
+        
+        if (soluteMass && balanceUncertainty) {
+            const soluteMassValue = parseFloat(soluteMass);
+            const uncertaintyValue = parseFloat(balanceUncertainty);
+            
+            if (soluteMassValue > 0) {
+                const relativeUncertainty = (uncertaintyValue / soluteMassValue) * 100;
+                
+                document.getElementById('calculation').innerHTML = `
+                    <p>입력된 용질의 양: ${soluteMassValue} g</p>
+                    <p>선택한 저울의 불확도: ±${uncertaintyValue} g</p>
+                    <p>상대 불확도 계산식:</p>
+                    <p>(${uncertaintyValue} / ${soluteMassValue}) × 100 = ${relativeUncertainty.toFixed(2)}%</p>
+                    <p>상대 불확도: <strong>${relativeUncertainty.toFixed(2)}%</strong></p>
+                `;
+            } else {
+                document.getElementById('calculation').innerHTML = "<p>올바른 용질의 양을 입력하세요.</p>";
+            }
+        } else {
+            document.getElementById('calculation').innerHTML = "<p>저장된 데이터가 없습니다.</p>";
+        }
+    </script>
+</body>
+</html>
