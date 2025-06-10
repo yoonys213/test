@@ -1,257 +1,471 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>과학적 불확도 계산기</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>불확도 계산기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
+  <!-- Tailwind CSS (CDN 버전 예시) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap');
+    
+    .parentheses {
+    font-size: clamp(1.5rem, 5vw, 2.5rem); /* 화면 너비에 따라 크기 조절 */
+    font-weight: bold;
+    color: #030BA6;
+    }
+    input::placeholder {
+      color: #9CA3AF;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 80%;
+      max-width: 600px;
+      position: relative;
+    }
+    .box-header {
+      background-color: #2E6FF2;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem 0.5rem 0 0;
+      font-weight: bold;
+      margin: -0.5rem -0.5rem 0.5rem -0.5rem;
+    }
+    /* 탭 스타일 재정의 */
+    .box-tab {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    color: #030BA6;
+    padding: 0.25rem 1rem;
+    font-weight: bold;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .title-font {
+    font-family: 'GmarketSans', sans-serif;
+    font-weight: 500; /* 300, 500, 700 가능 */
+    }
+    .back-btn {
+    position: absolute;
+    left: 3vw;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: clamp(40px, 8vw, 60px);
+    font-weight: 900;
+    cursor: pointer;
+    background: transparent;
+    width: clamp(50px, 10vw, 80px);
+    height: clamp(50px, 10vw, 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 10;
+    border: none;
+    outline: none;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .back-btn::before {
+    content: "〈";
+    display: block;
+    line-height: 1;
+    }
+    .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
         }
-        .calculator-container {
-            display: flex;
-            max-width: 1000px;
-            width: 100%;
-            gap: 20px;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        .display-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .box {
-            background-color: #e6f2ff;
-            border: 1px solid #b3d1ff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-        .box h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 1px solid #cce0ff;
-            padding-bottom: 10px;
-        }
-        .input-box {
-            min-height: 80px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 1.1em;
-            border: 1px solid #d9e7ff;
-        }
-        #calculation-process {
-            white-space: pre-wrap;
-            word-break: break-all;
-            text-align: left;
-            font-family: 'Arial', sans-serif;
-        }
-        .calculator {
-            width: 350px;
-            background-color: #e6f2ff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        #screen {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-            text-align: center;
-            border: 1px solid #d9e7ff;
-        }
-        #screen input {
-            width: 70px;
-            text-align: center;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin: 0 5px;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-        button {
-            border: none;
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 1.3em;
-            background-color: #4a90e2;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto;
-        }
-        button:hover {
-            background-color: #357abd;
-            transform: scale(1.05);
-        }
-    </style>
+    @media (max-width: 768px) {
+    .back-btn {
+        left: 2vw;
+    }
+    }
+  </style>
 </head>
-<body>
-    <div class="calculator-container">
-        <div class="display-panel">
-            <div class="box">
-                <h3>계산 과정</h3>
-                <div id="calculation-process" class="input-box"></div>
-            </div>
-            <div class="box">
-                <h3>결과</h3>
-                <div id="result" class="input-box"></div>
-            </div>
-        </div>
-        <div class="calculator">
-            <div id="screen">
-                ( <input type="number" id="value" step="any" placeholder="값"> ) ± 
-                ( <input type="number" id="uncertainty" step="any" placeholder="불확도"> )
-            </div>
-            <div class="buttons">
-                <button onclick="appendOperation('+')">+</button>
-                <button onclick="appendOperation('-')">-</button>
-                <button onclick="appendOperation('×')">×</button>
-                <button onclick="appendOperation('÷')">÷</button>
-                
-                <button onclick="setUncertainty(0.001)">0.001</button>
-                <button onclick="setUncertainty(0.01)">0.01</button>
-                <button onclick="clearAll()">C</button>
-                <button onclick="calculate()">=</button>
-            </div>
+<body class="bg-[#729DF2] flex items-center justify-center h-screen">
+  <!-- 뒤로 가기 버튼 (중앙 정렬) -->
+  <button onclick="try{location.href='계산기선택창.html';}catch(e){alert('이전 페이지로 이동할 수 없습니다.');}" 
+        class="back-btn"></button>
+
+          
+  </button>
+
+        <h1 class="absolute top-[1.25rem] left-40 text-white text-6xl font-bold title-font tracking-wide">
+    불확도 계산기
+    </h1>
+
+  <!-- 메인 컨테이너 -->
+  <div class="w-4/5 h-4/5 flex rounded-2xl overflow-hidden shadow-2xl">
+    <!-- 왼쪽 영역 - 계산 과정 및 결과 박스 (박스 위에 작은 박스 느낌) -->
+    <div class="w-1/2 flex flex-col justify-between p-6">
+      <!-- 계산 과정 박스 -->
+      <div class="bg-white rounded-xl p-4 h-[48%] flex flex-col relative shadow-md">
+        <div class="box-tab">계산 과정</div>
+        <div id="calculation-process" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold p-2 pt-6"></div>
+      </div>
+      
+      <!-- 결과 박스 -->
+        <div class="bg-white rounded-xl p-4 h-[48%] flex flex-col relative shadow-md">
+        <div class="box-tab">결과</div>
+        <div id="result" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold text-2xl p-2 pt-6"></div>
         </div>
     </div>
 
+    <!-- 오른쪽 영역 - 계산기 -->
+    <div class="w-1/2 flex flex-col items-center p-6">
+      <!-- 정보 버튼 -->
+      <button id="infoBtn" class="self-end bg-[#2E6FF2] text-white rounded-full w-10 h-10 flex items-center justify-center font-bold mb-4 hover:bg-[#1a5bd9] transition">
+        i
+      </button>
+      
+      <!-- 입력 화면 -->
+      <div class="bg-white rounded-2xl p-6 w-full mb-6 flex items-center justify-center">
+        <div class="flex items-center text-[#030BA6]">
+          <span class="parentheses">(</span>
+          <input type="text" id="value" placeholder="값" oninput="validateNumber(this)" 
+                 class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
+          <span class="parentheses">)</span>
+          <span class="mx-2 text-2xl font-bold">±</span>
+          <span class="parentheses">(</span>
+          <input type="text" id="uncertainty" placeholder="불확도" oninput="validateNumber(this)" 
+                 class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
+          <span class="parentheses">)</span>
+        </div>
+      </div>
+      
+      <!-- 버튼 그리드 -->
+      <div class="bg-[#CEE1F2] rounded-2xl p-6 w-full grid grid-cols-4 gap-4">
+        <!-- 연산 버튼 -->
+        <button onclick="appendOperation('+')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          +
+        </button>
+        
+        <button onclick="appendOperation('×')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          ×
+        </button>
+        <button onclick="appendOperation('÷')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          ÷
+        </button>
+        <button onclick="clearAll()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+          C
+        </button>
+        <!-- 불확도 바로 입력 버튼 -->
+        <button onclick="setUncertainty(0.001)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+          0.001
+        </button>
+        <button onclick="setUncertainty(0.01)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+          0.01
+        </button>
+        <button onclick="setUncertainty(0.12)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+          0.12
+        </button>
+        
+        
+        <button onclick="calculate()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          =
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 정보 모달 (X 버튼 추가) -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <button id="closeModalBtn" class="absolute top-4 right-4 text-2xl font-bold text-[#030BA6] hover:text-[#2E6FF2]">
+        ✕
+      </button>
+      <h2 class="text-[#030BA6] text-3xl font-bold mb-4">계산기 사용법</h2>
+      <ul class="list-disc pl-5 space-y-2 text-[#030BA6]">
+        <li>1. 키보드로 숫자를 입력하여 '값'과 '불확도' 칸을 채웁니다.</li>
+        <li>2. 측정값 → 불확도 순으로 수를 입력하세요.</li>
+        <li>3. 화면의 0.001, 0.01 버튼을 누르면 '불확도' 칸에 해당 값이 자동적으로 입력됩니다.</li>
+        <li>4. 괄호 안 숫자를 다 채운 후, 원하는 사칙연산 기호 버튼을 누르면 입력한 (측정값 ± 불확도)가 계산 과정에 추가됩니다.</li>
+        <li>5. 계속해서 숫자와 연산 기호를 넣어 식을 구성합니다.</li>
+        <li>6. 식의 마지막에 등호(=) 버튼을 누르거나, 입력 칸에서 Enter 키를 누르면 계산 결과가 Result 박스에 나타납니다.</li>
+        <li>7. 식을 다시 입력하고 싶을 시엔 C 버튼을 눌러 초기화합니다.</li>
+        <li>8. 이전 계산 결과가 있는 상태에서 바로 연산자 버튼을 누르면, 이전 결과를 첫 번째 값으로 사용하여 계산을 이어갈 수 있습니다.</li>
+      </ul>
+    </div>
+  </div>
     <script>
         let values = [];
         let uncertainties = [];
         let operations = [];
         let calculationHistory = "";
         let lastResult = null;
-        
-        function appendOperation(op) {
-            let value = document.getElementById("value").value;
-            let uncertainty = document.getElementById("uncertainty").value;
+
+        // 입력값 유효성 검사 (3.0을 유지하기 위해 type="text" 사용)
+        function validateNumber(input) {
+            let value = input.value;
+            // 소수점과 숫자만 허용
+            value = value.replace(/[^0-9.]/g, '');
+            // 중복 소수점 제거
+            if ((value.match(/\./g) || []).length > 1) {
+                value = value.substring(0, value.lastIndexOf('.'));
+            }
+            input.value = value;
+        }
+
+        // 소수점 자릿수 계산 (3.0은 1자리, 3은 0자리)
+        function getDecimalPlaces(numStr) {
+            if (!numStr || numStr === '') return 0;
+            if (numStr.indexOf('.') === -1) return 0;
+            return numStr.split('.')[1].length;
+        }
+
+        // 숫자 문자열을 숫자로 변환 (3.0 유지)
+        function parseNumber(numStr) {
+            if (numStr === '' || isNaN(numStr)) return NaN;
+            return parseFloat(numStr);
+        }
+
+        // 엄격한 짝수 반올림
+        function roundToEvenStrict(num, decimals) {
+            if (isNaN(num)) return num;
+            if (decimals === undefined || decimals < 0) decimals = 0;
             
-            if (value === "" || uncertainty === "") {
+            const factor = Math.pow(10, decimals);
+            const absNum = Math.abs(num);
+            const shifted = absNum * factor;
+            const decimalPart = shifted - Math.floor(shifted);
+            
+            if (Math.abs(decimalPart - 0.5) > 1e-10) {
+                return Math.round(shifted) / factor * Math.sign(num);
+            }
+            
+            const integerPart = Math.floor(shifted);
+            const lastDigit = integerPart % 10;
+            
+            if (lastDigit % 2 === 1) {
+                return (integerPart + 1) / factor * Math.sign(num);
+            } else {
+                return integerPart / factor * Math.sign(num);
+            }
+        }
+
+        // 불확도 반올림 (유효숫자 1개)
+        function roundUncertainty(unc) {
+            if (unc === 0) return 0;
+            if (!isFinite(unc)) return "계산 불가";
+            
+            const magnitude = Math.floor(Math.log10(Math.abs(unc)));
+            const factor = Math.pow(10, -magnitude);
+            const rounded = Math.round(unc * factor) / factor;
+            
+            return parseFloat(rounded.toFixed(Math.max(0, -magnitude)));
+        }
+
+        function appendOperation(op) {
+            let valueInput = document.getElementById("value").value;
+            let uncertaintyInput = document.getElementById("uncertainty").value;
+
+            if (valueInput === "" || uncertaintyInput === "") {
                 if (lastResult && op) {
-                    calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
                     values = [lastResult.value];
                     uncertainties = [lastResult.uncertainty];
                     operations = [op];
-                    lastResult = null;
+                    calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
+                    document.getElementById("calculation-process").innerText = calculationHistory;
+
+                    // 결과창도 초기화
+                    document.getElementById("result").innerText = "";
+
+                    clearInputs();
+                    return; // 바로 return 해서 중복 append 막기
+                }
+                else if (op && values.length > 0 && operations.length === values.length -1) {
+                    operations[operations.length - 1] = op;
+                    calculationHistory = calculationHistory.substring(0, calculationHistory.length - 2) + `${op} `;
                     document.getElementById("calculation-process").innerText = calculationHistory;
                 }
                 return;
             }
+
+            const currentValue = valueInput; // 문자열로 저장
+            const currentUncertainty = uncertaintyInput; // 문자열로 저장
+
+            if (isNaN(parseFloat(currentValue)) || isNaN(parseFloat(currentUncertainty))) {
+                alert("유효한 숫자를 입력해주세요.");
+                return;
+            }
             
             if (lastResult) {
-                calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
-                values = [lastResult.value];
-                uncertainties = [lastResult.uncertainty];
+                values = [];
+                uncertainties = [];
+                operations = [];
+                calculationHistory = "";
                 lastResult = null;
-            } else {
-                if (calculationHistory === "") {
-                    calculationHistory = `(${value} ± ${uncertainty}) ${op} `;
-                } else {
-                    calculationHistory += `(${value} ± ${uncertainty}) ${op} `;
-                }
-                values.push(parseFloat(value));
-                uncertainties.push(parseFloat(uncertainty));
             }
+
+            values.push(currentValue);
+            uncertainties.push(currentUncertainty);
             operations.push(op);
-            
+
+            calculationHistory += `(${currentValue} ± ${currentUncertainty}) ${op} `;
             document.getElementById("calculation-process").innerText = calculationHistory;
             clearInputs();
+            document.getElementById("value").focus();
         }
 
         function calculate() {
-            let value = document.getElementById("value").value;
-            let uncertainty = document.getElementById("uncertainty").value;
-            
-            if (value !== "" && uncertainty !== "") {
-                values.push(parseFloat(value));
-                uncertainties.push(parseFloat(uncertainty));
-                calculationHistory += `(${value} ± ${uncertainty})`;
+            let valueInput = document.getElementById("value").value;
+            let uncertaintyInput = document.getElementById("uncertainty").value;
+
+            // 마지막 입력 추가
+            if (valueInput !== "" && uncertaintyInput !== "") {
+                const val = valueInput;
+                const unc = uncertaintyInput;
+                if (isNaN(parseFloat(val)) || isNaN(parseFloat(unc))) {
+                    alert("마지막으로 입력한 값이 유효한 숫자가 아닙니다.");
+                    return;
+                }
+                values.push(val);
+                uncertainties.push(unc);
+                calculationHistory += `(${val} ± ${unc})`;
                 document.getElementById("calculation-process").innerText = calculationHistory;
+                clearInputs();
+            } else if (values.length === operations.length && values.length > 0) {
+                alert("계산을 완료하려면 마지막 숫자를 입력하거나, 마지막 연산자를 제거하세요.");
+                return;
             }
-            
-            if (values.length < 2 || operations.length < 1) return;
-            
-            let tempValues = [...values];
-            let tempUncertainties = [...uncertainties];
-            let tempOperations = [...operations];
-            
-            // 곱셈/나눗셈 먼저 계산 (기호를 ×와 ÷로 처리)
-            for (let i = 0; i < tempOperations.length; i++) {
-                const op = tempOperations[i];
-                if (op === '×' || op === '÷') {
-                    const a = tempValues[i];
-                    const b = tempValues[i+1];
-                    const ua = tempUncertainties[i];
-                    const ub = tempUncertainties[i+1];
-                    
-                    let newValue, newUncertainty;
-                    if (op === '×') {
-                        newValue = a * b;
-                        newUncertainty = (ua/Math.abs(a) + ub/Math.abs(b)) * Math.abs(newValue);
-                    } else {
-                        newValue = a / b;
-                        newUncertainty = (ua/Math.abs(a) + ub/Math.abs(b)) * Math.abs(newValue);
+
+            if (values.length < 2 && operations.length < 1 && values.length === 1) {
+                lastResult = { 
+                    value: values[0], 
+                    uncertainty: uncertainties[0] 
+                };
+                document.getElementById("result").innerText = `(${values[0]} ± ${uncertainties[0]})`;
+                return;
+            }
+
+            if (values.length !== operations.length + 1) {
+                alert("계산식의 숫자와 연산자 개수가 맞지 않습니다.");
+                return;
+            }
+
+            let currentValStr = values[0];
+            let currentUncStr = uncertainties[0];
+            let currentVal = parseNumber(currentValStr);
+            let currentUnc = parseNumber(currentUncStr);
+            let calculationSteps = "";
+
+            for (let i = 0; i < operations.length; i++) {
+                let nextValStr = values[i + 1];
+                let nextUncStr = uncertainties[i + 1];
+                let nextVal = parseNumber(nextValStr);
+                let nextUnc = parseNumber(nextUncStr);
+                let op = operations[i];
+                let resultValue, resultUncertainty;
+
+                calculationSteps += `단계 ${i+1}: (${currentValStr} ± ${currentUncStr}) ${op} (${nextValStr} ± ${nextUncStr})\n`;
+
+                if (op === '+' || op === '−') {
+                    resultValue = (op === '+') ? currentVal + nextVal : currentVal - nextVal;
+
+                    let relUnc1 = currentUnc / Math.abs(currentVal);
+                    let relUnc2 = nextUnc / Math.abs(nextVal);
+                    resultUncertainty = (relUnc1 + relUnc2) * Math.abs(resultValue);
+
+                    const decPlaces1 = getDecimalPlaces(currentValStr.toString());
+                    const decPlaces2 = getDecimalPlaces(nextValStr.toString());
+                    const minDecimals = Math.min(decPlaces1, decPlaces2);
+
+                    calculationSteps += `계산값: ${resultValue}\n`;
+                    calculationSteps += `소수점 자릿수: ${currentValStr}(${decPlaces1}), ${nextValStr}(${decPlaces2}) → ${minDecimals}\n`;
+
+                    resultValue = roundToEvenStrict(resultValue, minDecimals);
+
+                    calculationSteps += `반올림 후 값: ${resultValue}\n`;
+                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toExponential(2)} + ${relUnc2.toExponential(2)} = ${(relUnc1 + relUnc2).toExponential(2)}\n`;
+                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toExponential(2)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
+
+                } else if (op === '×' || op === '÷') {
+                    if (op === '÷' && nextVal === 0) {
+                        alert("0으로 나눌 수 없습니다.");
+                        clearAll();
+                        return;
                     }
-                    
-                    tempValues.splice(i, 2, newValue);
-                    tempUncertainties.splice(i, 2, newUncertainty);
-                    tempOperations.splice(i, 1);
-                    i--;
+
+                    resultValue = (op === '×') ? currentVal * nextVal : currentVal / nextVal;
+
+                    let relUnc1 = currentUnc / Math.abs(currentVal);
+                    let relUnc2 = nextUnc / Math.abs(nextVal);
+                    resultUncertainty = (relUnc1 + relUnc2) * Math.abs(resultValue);
+
+                    const sigFigs1 = getSignificantFigures(currentValStr.toString());
+                    const sigFigs2 = getSignificantFigures(nextValStr.toString());
+                    const minSigFigs = Math.min(sigFigs1, sigFigs2);
+                    resultValue = roundToSignificantFigures(resultValue, minSigFigs);
+
+                    calculationSteps += `값 = ${currentVal} ${op} ${nextVal} = ${resultValue}\n`;
+                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toExponential(2)} + ${relUnc2.toExponential(2)} = ${(relUnc1 + relUnc2).toExponential(2)}\n`;
+                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toExponential(2)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
                 }
+
+                currentVal = resultValue;
+                currentUnc = resultUncertainty;
+                currentValStr = resultValue.toString();
+                currentUncStr = resultUncertainty.toString();
             }
-            
-            // 덧셈/뺄셈 계산
-            let resultValue = tempValues[0];
-            let resultUncertainty = tempUncertainties[0];
-            
-            for (let i = 0; i < tempOperations.length; i++) {
-                const op = tempOperations[i];
-                const nextValue = tempValues[i+1];
-                const nextUncertainty = tempUncertainties[i+1];
-                
-                if (op === '+') {
-                    resultValue += nextValue;
-                } else {
-                    resultValue -= nextValue;
-                }
-                resultUncertainty += nextUncertainty;
-            }
-            
-            resultValue = Math.round(resultValue * 100000) / 100000;
-            resultUncertainty = Math.round(resultUncertainty * 100000) / 100000;
-            
+
+            currentUnc = roundUncertainty(currentUnc);
+            const uncertaintyDecimalPlaces = typeof currentUnc === 'number' ? getDecimalPlaces(currentUnc.toString()) : 0;
+            currentVal = roundToEvenStrict(currentVal, uncertaintyDecimalPlaces);
+
             lastResult = {
-                value: resultValue,
-                uncertainty: resultUncertainty
+                value: currentVal,
+                uncertainty: currentUnc
             };
-            document.getElementById("result").innerText = `(${resultValue} ± ${resultUncertainty})`;
-            clearInputs();
+
+            document.getElementById("result").innerText = `(${currentVal} ± ${currentUnc})`;
+            document.getElementById("calculation-process").innerText = calculationHistory + "\n" + calculationSteps;
+
+            values = [];
+            uncertainties = [];
+            operations = [];
+        }
+
+
+        function getSignificantFigures(numStr) {
+            if (!numStr) return 1;
+            const num = parseFloat(numStr);
+            if (num === 0) return 1;
+            
+            // 소수점 이하 끝의 0도 유효숫자로 간주 (3.0은 2자리)
+            const str = numStr.replace('.', '').replace(/^0+/, '');
+            return str.length;
+        }
+
+        function roundToSignificantFigures(num, sigFigs) {
+            if (num === 0 || sigFigs < 1) return 0;
+            const magnitude = Math.floor(Math.log10(Math.abs(num)));
+            const factor = 10 ** (sigFigs - magnitude - 1);
+            return Math.round(num * factor) / factor;
         }
 
         function setUncertainty(value) {
@@ -272,7 +486,72 @@
             document.getElementById("calculation-process").innerText = "";
             document.getElementById("result").innerText = "";
             clearInputs();
+            document.getElementById("value").focus();
         }
+
+        // 모달 및 이벤트 리스너
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById("infoModal");
+            const btn = document.getElementById("infoBtn");
+            const span = document.getElementById("closeModalBtn");
+
+            if(btn) btn.onclick = function() {
+                modal.style.display = "flex";
+            }
+            if(span) span.onclick = function() {
+                modal.style.display = "none";
+            }
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            // 키보드 이벤트
+            const valueInput = document.getElementById("value");
+            const uncertaintyInput = document.getElementById("uncertainty");
+
+            function handleKeyPress(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    calculate();
+                } else if (event.key === "+") {
+                    event.preventDefault();
+                    appendOperation('+');
+                } else if (event.key === "-") {
+                    event.preventDefault();
+                    appendOperation('−');
+                } else if (event.key === "*") {
+                    event.preventDefault();
+                    appendOperation('×');
+                } else if (event.key === "/") {
+                    event.preventDefault();
+                    appendOperation('÷');
+                } else if (event.key === "Escape") {
+                    event.preventDefault();
+                    clearAll();
+                }
+            }
+
+            if(valueInput) {
+                valueInput.addEventListener("keypress", handleKeyPress);
+                valueInput.addEventListener("keydown", (e) => {
+                    if (e.key === "Tab") {
+                        e.preventDefault();
+                        uncertaintyInput.focus();
+                    }
+                });
+            }
+            if(uncertaintyInput) {
+                uncertaintyInput.addEventListener("keypress", handleKeyPress);
+                uncertaintyInput.addEventListener("keydown", (e) => {
+                    if (e.key === "Tab") {
+                        e.preventDefault();
+                        valueInput.focus();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
