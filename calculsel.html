@@ -11,7 +11,48 @@
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
         }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
         
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 8%;
+            }
+            .back-btn {
+                left: 2vw;
+                font-size: clamp(30px, 8vw, 50px);
+            }
+        }
         body {
             height: 100vh;
             margin: 0;
@@ -76,11 +117,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
+    <button class="back-btn" onclick="location.href='로비.html'"></button>
     <div class="button-container">
         <button class="exp-btn btn-standard" onclick="location.href='standard_solution1.html'">표준용액 제조</button>
         <button class="exp-btn btn-dilution" onclick="location.href='dilution1.html'">희석</button>
-        <button class="exp-btn btn-titration" onclick="location.href='titration.html'">중화적정</button>
+        <button class="exp-btn btn-titration" onclick="location.href='titration1.html'">중화적정</button>
         <button class="exp-btn btn-custom" onclick="location.href='custom_calculation.html'">직접 계산식 입력하기</button>
     </div>
 </body>
