@@ -2,133 +2,215 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>표준용액 제조</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>표준용액 계산</title>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
             overflow: hidden;
-        }
-        
-        body {
-            height: 100vh;
-            width: 100vw;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            background-color: #020873;
-            padding-top: 50px;
-        }
-        
-        .main-content {
+            background-color: #030BA6;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 750px;
-            margin-top: 30px;
         }
-        
-        .header {
-            width: 100%;
-            margin-bottom: 60px;
-            text-align: center;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 5vh;
+            padding-bottom: 20px;
         }
-        
         .title {
-            font-size: 70px;
-            font-weight: 1000;
-            color: white;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            line-height: 1.1;
-            margin-bottom: 15px;
-            white-space: nowrap;
+            font-size: 80px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
         }
-        
-        .instruction {
-            font-size: 28px;
-            color: white;
-            font-weight: 500;
-            white-space: nowrap;
-            margin-top: 30px;
+        .prompt {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
         }
-        
-        .button-container {
+        .input-group {
             display: flex;
-            gap: 140px;
-            margin-bottom: 40px;
-            justify-content: center;
-            width: 100%;
-            padding-top: 30px;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-left: 50px;
         }
-        
-        .volume-btn {
-            width: 115px;
-            height: 115px;
-            border-radius: 50%;
-            border: none;
-            background-color: white;
-            color: #020873;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
-            position: relative;
-            top: 0;
+        .input-label {
+            font-size: 30px;
+            width: 300px;
+            margin-right: 15px;
         }
-        
-        /* 호버 효과만 유지 (선택 효과는 제거) */
-        .volume-btn:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        }
-        
-        .uncertainty-container {
+        .value-input-container {
             display: flex;
-            gap: 140px;
-            justify-content: center;
-            width: 100%;
-            margin-top: 40px;
+            align-items: center;
         }
-        
-        .uncertainty-label {
-            width: 115px;
+        input {
+            width: 150px;
+            padding: 15px;
+            font-size: 30px;
             text-align: center;
-            font-size: 18px;
-            color: rgba(255,255,255,0.8);
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: white;
+        }
+        input.error {
+            border-color: #ff6b6b;
+            animation: shake 0.5s;
+        }
+        .plus-minus {
+            font-size: 30px;
+            margin: 0 10px;
+        }
+        .unit {
+            font-size: 30px;
+            min-width: 80px;
+            margin-left: 10px;
+        }
+        .submit-btn {
+            padding: 15px 30px;
+            font-size: 25px;
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+        }
+        .submit-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="main-content">
-        <div class="header">
-            <h1 class="title">표준용액 제조</h1>
-            <p class="instruction">2) 사용한 전자저울을 선택하세요</p>
+    <button class="back-btn" onclick="location.href='standard_solution1.html'"></button>
+    <div class="container">
+        <div class="title">표준용액</div>
+        <div class="prompt">용질 정보를 입력해주세요</div>
+
+        <div class="input-group">
+            <div class="input-label">용질의 질량</div>
+            <div class="value-input-container">
+                <input type="number" id="standard_m" min="0" step="0.01">
+                <span class="unit">g</span>
+            </div>
         </div>
-        
-        <div class="button-container">
-            <button class="volume-btn" onclick="selectBalance('세자리수')">세자리수</button>
-            <button class="volume-btn" onclick="selectBalance('네자리수')">네자리수</button>
+
+        <div class="input-group">
+            <div class="input-label">질량 불확도</div>
+            <div class="value-input-container">
+                <input type="number" id="standard_alpha" min="0" step="0.001">
+                <span class="unit">g</span>
+            </div>
         </div>
-        
-        <div class="uncertainty-container">
-            <div class="uncertainty-label">불확도</div>
-            <div class="uncertainty-label">불확도</div>
+
+        <div class="input-group">
+            <div class="input-label">화학식량</div>
+            <div class="value-input-container">
+                <input type="number" id="standard_c" min="0" step="0.01">
+                <span class="unit">g/mol</span>
+            </div>
         </div>
+
+        <button class="submit-btn" onclick="submitData()">입력 완료</button>
     </div>
 
     <script>
-        // 전자저울 선택 함수 (순수하게 값만 저장)
-        function selectBalance(balanceType) {
-            localStorage.setItem('selectedBalance', balanceType);
-            window.location.href = 'standard_solution3.html';
+        function submitData() {
+            // 입력값 유효성 검사
+            const ids = ['standard_m', 'standard_alpha', 'standard_c'];
+            let valid = true;
+
+            document.querySelectorAll('input').forEach(el => el.classList.remove('error'));
+
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                const val = parseFloat(el.value);
+                if (isNaN(val) || val <= 0) {
+                    el.classList.add('error');
+                    valid = false;
+                    alert('모든 값을 0보다 큰 숫자로 입력해주세요!');
+                    return;
+                }
+            });
+
+            if (!valid) return;
+
+            // 디버깅용 alert - 저장 전 모든 값 확인
+            const debugMessage = `
+[저장될 값 확인]
+─────────────────
+▶ 기구 정보
+- 기구 종류: ${localStorage.getItem('selectedTool') || '없음'}
+- 선택 부피: ${localStorage.getItem('selectedVolume') || '없음'} mL
+- 기구 불확도: ${localStorage.getItem('uncertainty_' + localStorage.getItem('selectedTool') + '_' + localStorage.getItem('selectedVolume')) || '없음'}
+
+▶ 현재 입력값
+- 용질 질량: ${document.getElementById('standard_m').value} g
+- 질량 불확도: ${document.getElementById('standard_alpha').value} g
+- 화학식량: ${document.getElementById('standard_c').value} g/mol
+─────────────────
+이 값을 저장할까요?`;
+
+            if (confirm(debugMessage)) {
+                // 실제 저장 로직
+                localStorage.setItem('standard_m', parseFloat(document.getElementById('standard_m').value));
+                localStorage.setItem('standard_alpha', parseFloat(document.getElementById('standard_alpha').value));
+                localStorage.setItem('standard_c', parseFloat(document.getElementById('standard_c').value));
+
+                alert('저장 완료! 결과 페이지로 이동합니다.');
+                location.href = 'standard_solution3.html';
+            } else {
+                alert('저장이 취소되었습니다. 값을 다시 확인해주세요.');
+            }
         }
     </script>
 </body>
