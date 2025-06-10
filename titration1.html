@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>중화적정 계산</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #030BA6;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 5vh;
+            padding-bottom: 20px; /* 하단 패딩 추가 */
+        }
+        .title {
+            font-size: 80px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .prompt {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-left: 50px;
+        }
+        .input-label {
+            font-size: 30px;
+            width: 300px;
+            margin-right: 15px;
+        }
+        .value-input-container {
+            display: flex;
+            align-items: center;
+        }
+        input {
+            width: 150px;
+            padding: 15px;
+            font-size: 30px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: white;
+        }
+        input.error {
+            border-color: #ff6b6b;
+            animation: shake 0.5s;
+        }
+        .uncertainty-input {
+            margin-left: 10px;
+        }
+        .plus-minus {
+            font-size: 30px;
+            margin: 0 10px;
+        }
+        .unit {
+            font-size: 30px;
+            min-width: 80px;
+            margin-left: 10px;
+        }
+        .submit-btn {
+            padding: 15px 30px; /* 패딩 조정 */
+            font-size: 25px; /* 폰트 크기 조정 */
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0; /* 상단 마진 조정 */
+        }
+        .submit-btn.error {
+            border-color: #ff6b6b;
+        }
+        .submit-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 8%;
+            }
+            .back-btn {
+                left: 2vw;
+                font-size: clamp(30px, 8vw, 50px);
+            }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='계산기선택창.html'"></button>
+    <div class="container">
+        <div class="title">중화적정</div>
+        <div class="prompt">적정 정보를 입력해주세요</div>
+        
+        <!-- 농도를 아는 용액의 농도 (M±α) -->
+        <div class="input-group">
+            <div class="input-label">표준 용액의 농도</div>
+            <div class="value-input-container">
+                <input type="number" id="titration_M" class="value-input" min="0" step="0.01">
+                <span class="plus-minus">±</span>
+                <input type="number" id="titration_alpha" class="uncertainty-input" min="0" step="0.01">
+                <span class="unit">M</span>
+            </div>
+        </div>
+        
+        <!-- 농도를 아는 용액의 부피 (V1±β) -->
+        <div class="input-group">
+            <div class="input-label">표준 용액의 부피</div>
+            <div class="value-input-container">
+                <input type="number" id="titration_V1" class="value-input" min="0" step="0.1">
+                <span class="plus-minus">±</span>
+                <input type="number" id="titration_beta" class="uncertainty-input" min="0" step="0.1">
+                <span class="unit">mL</span>
+            </div>
+        </div>
+        
+        <!-- 농도를 모르는 용액의 부피 (V2±θ) -->
+        <div class="input-group">
+            <div class="input-label">미지 용액의 부피</div>
+            <div class="value-input-container">
+                <input type="number" id="titration_V2" class="value-input" min="0" step="0.1">
+                <span class="plus-minus">±</span>
+                <input type="number" id="titration_theta" class="uncertainty-input" min="0" step="0.1">
+                <span class="unit">mL</span>
+            </div>
+        </div>
+        
+        <!-- 가수 입력 -->
+        <div class="input-group">
+            <div class="input-label">표준 용액의 가수 (n₁)</div>
+            <input type="number" id="titration_n1" class="value-input" min="1" step="1">
+        </div>
+        
+        <div class="input-group">
+            <div class="input-label">미지 용액의 가수 (n₂)</div>
+            <input type="number" id="titration_n2" class="value-input" min="1" step="1">
+        </div>
+        
+        <button class="submit-btn" onclick="validateForm()">입력 완료</button>
+       
+    </div>
+
+    <script>
+        function validateForm() {
+            let isValid = true;
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // 모든 에러 클래스 초기화
+            document.querySelectorAll('.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            submitBtn.classList.remove('error');
+
+            // 입력 필드 검증
+            const inputs = [
+                { id: 'titration_M', name: '표준 용액 농도(M)' },
+                { id: 'titration_alpha', name: '농도 불확도(α)' },
+                { id: 'titration_V1', name: '표준 용액 부피(V₁)' },
+                { id: 'titration_beta', name: '부피 불확도(β)' },
+                { id: 'titration_V2', name: '미지 용액 부피(V₂)' },
+                { id: 'titration_theta', name: '부피 불확도(θ)' },
+                { id: 'titration_n1', name: '표준 용액 가수(n₁)' },
+                { id: 'titration_n2', name: '미지 용액 가수(n₂)' }
+            ];
+
+            inputs.forEach(input => {
+                const element = document.getElementById(input.id);
+                const value = parseFloat(element.value);
+                if (isNaN(value) || (input.id !== 'titration_n1' && input.id !== 'titration_n2' && value < 0) || 
+                    ((input.id === 'titration_n1' || input.id === 'titration_n2') && value < 1)) {
+                    element.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            // 오류 시 버튼 테두리 변경
+            if (!isValid) {
+                submitBtn.classList.add('error');
+                return;
+            }
+
+            submitData();
+        }
+
+        function submitData() {
+            // 입력값 가져오기
+            const titration_M = parseFloat(document.getElementById('titration_M').value);
+            const titration_alpha = parseFloat(document.getElementById('titration_alpha').value);
+            const titration_V1 = parseFloat(document.getElementById('titration_V1').value);
+            const titration_beta = parseFloat(document.getElementById('titration_beta').value);
+            const titration_V2 = parseFloat(document.getElementById('titration_V2').value);
+            const titration_theta = parseFloat(document.getElementById('titration_theta').value);
+            const titration_n1 = parseInt(document.getElementById('titration_n1').value);
+            const titration_n2 = parseInt(document.getElementById('titration_n2').value);
+            
+            // localStorage에 저장
+            localStorage.setItem('titration_M', titration_M);
+            localStorage.setItem('titration_alpha', titration_alpha);
+            localStorage.setItem('titration_V1', titration_V1);
+            localStorage.setItem('titration_beta', titration_beta);
+            localStorage.setItem('titration_V2', titration_V2);
+            localStorage.setItem('titration_theta', titration_theta);
+            localStorage.setItem('titration_n1', titration_n1);
+            localStorage.setItem('titration_n2', titration_n2);
+            
+            // 다음 페이지로 이동
+            window.location.href = "titration2.html";
+        }
+
+        // 입력 시 에러 상태 초기화
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                document.querySelector('.submit-btn').classList.remove('error');
+            });
+        });
+        
+
+    </script>
+</body>
+</html>
