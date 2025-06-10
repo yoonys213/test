@@ -2,95 +2,247 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>희석 배수 입력</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>희석 계산기</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             height: 100vh;
             margin: 0;
+            padding: 0;
+            overflow: hidden;
             background-color: #030BA6;
             color: white;
             display: flex;
             flex-direction: column;
-            align-items: center; /* 전체 요소 중앙 정렬 */
+            align-items: center;
         }
         .container {
             width: 90%;
-            max-width: 1200px;
+            max-width: 800px;
+            margin-top: 5vh;
         }
         .title {
-            font-size: 150px;
+            font-size: 80px;
             font-weight: 900;
-            margin-bottom: 30px;
-            text-align: left; /* 제목만 왼쪽 정렬 */
-            margin-left: 260px; /* 왼쪽 여백 추가 (조절 가능) */
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
         }
         .prompt {
-            font-size: 30px;
-            margin-bottom: 40px;
-            text-align: left; /* 설명 텍스트만 왼쪽 정렬 */
-            margin-left: 260px; /* 왼쪽 여백 추가 (조절 가능) */
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
         }
         .input-group {
             display: flex;
             align-items: center;
-            justify-content: center; /* 입력창은 중앙 유지 */
-            margin-bottom: 40px;
+            margin-bottom: 25px;
+            margin-left: 50px;
+        }
+        .input-label {
+            font-size: 30px;
+            width: 300px;
+            margin-right: 15px;
+        }
+        .value-input-container {
+            display: flex;
+            align-items: center;
         }
         input {
-            width: 450px;
-            padding: 30px;
-            font-size: 100px;
-            text-align: right;
+            width: 150px;
+            padding: 15px;
+            font-size: 30px;
+            text-align: center;
             border: 2px solid #ccc;
             border-radius: 6px;
-            margin-right: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: white;
+        }
+        input.error {
+            border-color: #ff6b6b;
+            animation: shake 0.5s;
+        }
+        .uncertainty-input {
+            margin-left: 10px;
+        }
+        .plus-minus {
+            font-size: 30px;
+            margin: 0 10px;
         }
         .unit {
-            font-size: 150px;
+            font-size: 30px;
+            min-width: 80px;
+            margin-left: 10px;
         }
         .submit-btn {
-            padding: 30px 60px;
-            font-size: 40px;
+            padding: 20px 40px;
+            font-size: 30px;
             font-weight: bold;
             background-color: white;
             color: #030BA6;
-            border: none;
+            border: 2px solid white;
             border-radius: 10px;
             cursor: pointer;
             display: block;
-            margin: 0 auto; /* 버튼 중앙 정렬 */
+            margin: 40px auto 0;
+        }
+        .submit-btn.error {
+            border-color: #ff6b6b;
         }
         .submit-btn:hover {
             background-color: #f0f0f0;
         }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body>
+    <button class="back-btn" onclick="location.href='계산기선택창.html'"></button>
     <div class="container">
-        <div class="title">희석</div>
-        <div class="prompt">1) 몇 배 희석했는지 입력해주세요</div>
+        <div class="title">희석 계산</div>
+        <div class="prompt">희석 정보를 입력해주세요</div>
+        
+        <!-- 희석 전 용액의 농도 (C1 ± α) -->
         <div class="input-group">
-            <input type="number" id="dilutionFactor" min="1" value="1">
-            <span class="unit">배</span>
+            <div class="input-label">희석 전 용액의 농도</div>
+            <div class="value-input-container">
+                <input type="number" id="C1" class="value-input" min="0" step="0.01">
+                <span class="plus-minus">±</span>
+                <input type="number" id="alpha" class="uncertainty-input" min="0" step="0.01">
+                <span class="unit">M</span>
+            </div>
         </div>
-        <button class="submit-btn" onclick="submitDilution()">입력 완료</button>
+        
+        <!-- 희석 전 용액의 부피 (V1 ± β) -->
+        <div class="input-group">
+            <div class="input-label">희석 전 용액의 부피</div>
+            <div class="value-input-container">
+                <input type="number" id="V1" class="value-input" min="0" step="0.1">
+                <span class="plus-minus">±</span>
+                <input type="number" id="beta" class="uncertainty-input" min="0" step="0.1">
+                <span class="unit">mL</span>
+            </div>
+        </div>
+        
+        <!-- 희석 후 용액의 부피 (V2 ± γ) -->
+        <div class="input-group">
+            <div class="input-label">희석 후 용액의 부피</div>
+            <div class="value-input-container">
+                <input type="number" id="V2" class="value-input" min="0" step="0.1">
+                <span class="plus-minus">±</span>
+                <input type="number" id="gamma" class="uncertainty-input" min="0" step="0.1">
+                <span class="unit">mL</span>
+            </div>
+        </div>
+        
+        <button class="submit-btn" onclick="validateForm()">계산하기</button>
     </div>
 
     <script>
-        const dilutionInput = document.getElementById('dilutionFactor');
-        let dilutionFactor = 1;
+        function validateForm() {
+            let isValid = true;
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // 모든 에러 클래스 초기화
+            document.querySelectorAll('.error').forEach(el => {
+                el.classList.remove('error');
+            });
+            submitBtn.classList.remove('error');
 
-        dilutionInput.addEventListener('input', function() {
-            dilutionFactor = parseInt(this.value) || 1;
-            console.log("현재 희석 배수: ", dilutionFactor + "배");
-        });
+            // 입력 필드 검증
+            const inputs = [
+                { id: 'C1', name: '희석 전 농도' },
+                { id: 'alpha', name: '농도 불확도' },
+                { id: 'V1', name: '희석 전 부피' },
+                { id: 'beta', name: '부피 불확도' },
+                { id: 'V2', name: '희석 후 부피' },
+                { id: 'gamma', name: '부피 불확도' }
+            ];
 
-        function submitDilution() {
-            localStorage.setItem('dilutionFactor', dilutionFactor);
+            inputs.forEach(input => {
+                const element = document.getElementById(input.id);
+                if (!element.value.trim() || parseFloat(element.value) <= 0) {
+                    element.classList.add('error');
+                    isValid = false;
+                    alert(`${input.name}을(를) 올바르게 입력해주세요! (0보다 큰 값)`);
+                }
+            });
+
+            if (!isValid) {
+                submitBtn.classList.add('error');
+                return;
+            }
+
+            submitData();
+        }
+
+        function submitData() {
+            // 입력값 가져오기
+            const C1 = parseFloat(document.getElementById('C1').value);
+            const alpha = parseFloat(document.getElementById('alpha').value);
+            const V1 = parseFloat(document.getElementById('V1').value);
+            const beta = parseFloat(document.getElementById('beta').value);
+            const V2 = parseFloat(document.getElementById('V2').value);
+            const gamma = parseFloat(document.getElementById('gamma').value);
+            
+            // localStorage에 저장
+            localStorage.setItem('C1', C1);
+            localStorage.setItem('alpha', alpha);
+            localStorage.setItem('V1', V1);
+            localStorage.setItem('beta', beta);
+            localStorage.setItem('V2', V2);
+            localStorage.setItem('gamma', gamma);
+            
+            // 결과 페이지로 이동
             window.location.href = "dilution2.html";
         }
+
+        // 입력 시 에러 상태 초기화
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                document.querySelector('.submit-btn').classList.remove('error');
+            });
+        });
     </script>
 </body>
 </html>
