@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>희석 결과</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            background-color: #030BA6;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* 세로 중앙 정렬 추가 */
+            overflow: hidden;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            text-align: center; /* 가로 중앙 정렬 */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 내용물 가운데 정렬 */
+        }
+        .result-title {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .result-value {
+            font-size: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* 값 박스들 가운데 정렬 */
+            margin-bottom: 40px;
+        }
+        .value-box {
+            padding: 15px 25px;
+            font-size: 50px;
+            text-align: center;
+            border: 2px solid white;
+            border-radius: 6px;
+            margin: 0 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .plus-minus {
+            font-size: 50px;
+            margin: 0 10px;
+        }
+        .unit {
+            font-size: 40px;
+            margin-left: 10px;
+        }
+        .back-btn {
+            padding: 20px 40px;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+        .back-btn:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-title">희석 후 용액의 농도</div>
+        <div class="result-value">
+            <span class="value-box" id="finalConcValue"></span>
+            <span class="plus-minus">±</span>
+            <span class="value-box" id="finalConcUncertainty"></span>
+            <span class="unit">M</span>
+        </div>
+        <button class="back-btn" onclick="window.location.href='dilution1.html'">돌아가기</button>
+    </div>
+
+    <script>
+        // localStorage에서 값 가져오기
+        const C1 = parseFloat(localStorage.getItem('C1'));
+        const alpha = parseFloat(localStorage.getItem('alpha'));
+        const V1 = parseFloat(localStorage.getItem('V1'));
+        const beta = parseFloat(localStorage.getItem('beta'));
+        const V2 = parseFloat(localStorage.getItem('V2'));
+        const gamma = parseFloat(localStorage.getItem('gamma'));
+
+        // 값이 없을 경우 오류 처리
+        if (isNaN(C1) || isNaN(alpha) || isNaN(V1) || isNaN(beta) || isNaN(V2) || isNaN(gamma)) {
+            alert("입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.");
+            window.location.href = "dilution1.html";
+        }
+
+        // 정확한 반올림 함수
+        function preciseRound(value, decimals) {
+            const factor = 10 ** decimals;
+            const multiplied = value * factor;
+            const decimalPart = (multiplied - Math.floor(multiplied)).toFixed(3);
+            
+            if (decimalPart === "0.500") {
+                const intPart = Math.floor(multiplied);
+                return (intPart % 2 === 0) ? intPart / factor : (intPart + 1) / factor;
+            }
+            return Math.round(multiplied) / factor;
+        }
+
+        // 희석 계산 함수
+        function calculateDilution() {
+            const C2 = (C1 * V1) / V2;
+            const relUnc = (alpha/C1) + (beta/V1) + (gamma/V2);
+            const deltaC2 = C2 * relUnc;
+            
+            return {
+                conc: preciseRound(C2, 2),
+                unc: preciseRound(deltaC2, 2)
+            };
+        }
+
+        // 결과 표시
+        function displayResults() {
+            const { conc, unc } = calculateDilution();
+            document.getElementById('finalConcValue').textContent = conc.toFixed(2);
+            document.getElementById('finalConcUncertainty').textContent = unc.toFixed(2);
+        }
+        
+        window.onload = displayResults;
+    </script>
+</body>
+</html>
