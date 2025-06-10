@@ -1,94 +1,186 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>표준용액 제조</title>
-    <style>
-        body {
-            background-color: #000080;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .container {
-            margin-top: 50px;
-        }
-        .input-box {
-            display: inline-block;
-            border: 2px dashed white;
-            padding: 10px;
-            width: 300px;
-            text-align: center;
-            background-color: white;
-            color: black;
-            font-size: 36px;
-        }
-        .uncertainty {
-            display: inline-block;
-            padding-left: 10px;
-            font-size: 64px;
-        }
-        .large-text {
-            font-size: 96px;
-            font-weight: 900;
-        }
-        .button {
-            margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 32px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>계산 결과</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #030BA6;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      width: 80%;
+      max-width: 800px;
+      padding-bottom: 20px;
+      text-align: center;
+    }
+    .result-title {
+      font-size: 50px;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+    .result {
+      font-size: 30px;
+      margin: 15px 0;
+    }
+    .back-btn {
+      position: absolute;
+      left: 3vw;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-size: clamp(40px, 8vw, 60px);
+      font-weight: 900;
+      cursor: pointer;
+      background: transparent;
+      width: clamp(50px, 10vw, 80px);
+      height: clamp(50px, 10vw, 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      z-index: 10;
+      border: none;
+      outline: none;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .back-btn:hover {
+      transform: translateY(-50%) scale(1.2);
+      text-shadow: 0 0 15px rgba(0,0,0,0.8);
+    }
+    .back-btn::before {
+      content: "〈";
+      display: block;
+      line-height: 1;
+    }
+    .debug-info {
+      font-size: 14px;
+      color: #ccc;
+      margin-top: 30px;
+      text-align: left;
+      border-top: 1px solid #555;
+      padding-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="large-text">표준용액 제조</h1>
-        <p style="font-size: 24px;">3) 사용한 용질의 양을 입력하세요</p>
-        <input type="text" id="soluteAmount" class="input-box" placeholder="용질의 양 입력">
-        <span class="uncertainty">± <span id="uncertaintyValue"></span></span>
-        <br>
-        <button class="button" onclick="checkInput()">입력 확인</button>
-    </div>
+  <button class="back-btn" onclick="location.href='standard_solution2.html'"></button>
+  <div class="container">
+    <div class="result-title">계산 결과</div>
+    <div id="results"></div>
+    <div id="debug" class="debug-info"></div>
+  </div>
 
-    <script>
-        // 용질의 양 저장 변수
-        const soluteAmountKey = "soluteAmount";
-        
-        // 입력한 용질의 양을 localStorage에 저장
-        document.getElementById("soluteAmount").addEventListener("input", function() {
-            localStorage.setItem(soluteAmountKey, this.value);
-        });
+  <script>
+    // ————————————————
+    // 1) 은행가 반올림 함수
+    // ————————————————
+    function roundHalfToEven(val, digits) {
+      const factor = 10 ** digits;
+      const x = val * factor;
+      const i = Math.floor(x);
+      const f = x - i;
+      if (Math.abs(f - 0.5) < 1e-12) {
+        return ((i % 2 === 0 ? i : i + 1) / factor);
+      }
+      return Math.round(x) / factor;
+    }
 
-        // localStorage에서 balanceUncertainty 값을 가져와 표시
-        const balanceUncertainty = localStorage.getItem("balanceUncertainty") || "0.0001";
-        document.getElementById("uncertaintyValue").innerText = balanceUncertainty;
-        
-        // 저울의 종류 변수 초기화
-        let scaleType = "";
-        
-        // balanceUncertainty 값 확인 및 처리
-        console.log("선택한 저울의 불확도:", balanceUncertainty);
-        if(balanceUncertainty === "0.001") {
-            console.log("세자리수 저울이 선택되었습니다.");
-            scaleType = "세자리수 저울";
-        } else if(balanceUncertainty === "0.0001") {
-            console.log("네자리수 저울이 선택되었습니다.");
-            scaleType = "네자리수 저울";
-        } else {
-            alert("저울을 선택하지 않았습니다!");
-        }
+    // ————————————————
+    // 2) 불확도: 유효숫자 한 자리 + 은행가 반올림
+    // ————————————————
+    function roundUncertainty(u) {
+      if (u === 0) return 0;
 
-        // 입력 확인 버튼 동작
-        function checkInput() {
-            const soluteAmount = localStorage.getItem(soluteAmountKey);
-            if (!soluteAmount || soluteAmount.trim() === "") {
-                alert("용질의 양을 입력하세요!");
-                return;
-            }
-            localStorage.setItem("soluteAmount", soluteAmount);
-            window.location.href = "standard_solution4.html";
-        }
-    </script>
+      const exponent = Math.floor(Math.log10(Math.abs(u)));
+      const scale = 10 ** exponent;
+
+      // 스케일링 후 첫째 자리만 남기고 은행가 반올림
+      const scaled = u / scale; // 예: 0.00025 -> 2.5
+      const rounded = roundHalfToEven(scaled, 1); // 2.5 -> 2 (if 앞이 짝수)
+      
+      return rounded * scale;
+    }
+
+    // ————————————————
+    // 3) 값과 불확도의 자릿수 맞춤
+    // ————————————————
+    function formatValueWithUncertainty(value, uncertainty) {
+      if (uncertainty === 0) return value.toFixed(2);
+      
+      // 불확도의 유효숫자 위치 확인
+      const uncertExponent = Math.floor(Math.log10(Math.abs(uncertainty)));
+      const digits = Math.max(0, -uncertExponent);
+      
+      // 값과 불확도를 동일한 소수점 자리수로 반올림
+      const roundedValue = roundHalfToEven(value, digits);
+      const roundedUncert = roundHalfToEven(uncertainty, digits);
+      
+      return {
+        value: roundedValue.toFixed(digits),
+        uncertainty: roundedUncert.toFixed(digits)
+      };
+    }
+
+    window.onload = function() {
+      // 저장된 값 읽기
+      const m = parseFloat(localStorage.getItem('standard_m'));
+      const alpha = parseFloat(localStorage.getItem('standard_alpha'));
+      const M = parseFloat(localStorage.getItem('standard_c'));
+      const V = parseFloat(localStorage.getItem('standard_v'));
+      const tool = localStorage.getItem('selectedTool');
+      const vol = localStorage.getItem('selectedVolume');
+      const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
+
+      // 검증
+      if ([m, alpha, M, V, beta].some(x => isNaN(x))) {
+        return document.getElementById('results')
+          .innerHTML = "<div class='result'>입력값 오류</div>";
+      }
+
+      // 1) 용질의 양 n, 불확도 dn
+      const n = m / M;
+      const dn = roundUncertainty(alpha / M);
+
+      // 2) 농도 C, 불확도 dC (상대불확도 합산)
+      const VL = V / 1000;
+      const dVL = beta / 1000;
+      const C = n / VL;
+      const rel = (dn / n) + (dVL / VL);
+      const dC = C * rel;
+
+      // 3) 값과 불확도 포맷팅
+      const nFormatted = formatValueWithUncertainty(n, dn);
+      const cFormatted = formatValueWithUncertainty(C, dC);
+
+      // 출력
+      document.getElementById('results').innerHTML = `
+        <div class="result">
+          용질의 양: ${nFormatted.value} ± ${nFormatted.uncertainty} mol
+        </div>
+        <div class="result">
+          표준용액의 농도: ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
+        </div>
+      `;
+
+      // 디버그
+      document.getElementById('debug').innerHTML = `
+        <p>디버그 정보:</p>
+        <p>m=${m} g, α=${alpha} g, M=${M} g/mol</p>
+        <p>V=${V} mL, β=${beta} mL</p>
+        <p>계산된 농도: ${C}, 불확도: ${dC}</p>
+      `;
+    };
+  </script>
 </body>
 </html>
