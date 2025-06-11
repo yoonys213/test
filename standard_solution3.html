@@ -72,115 +72,124 @@
       padding-top: 10px;
     }
   </style>
-</head>
-<body>
-  <button class="back-btn" onclick="location.href='standard_solution2.html'"></button>
-  <div class="container">
-    <div class="result-title">계산 결과</div>
-    <div id="results"></div>
-    <div id="debug" class="debug-info"></div>
-  </div>
 
-  <script>
-    // ————————————————
-    // 1) 은행가 반올림 함수
-    // ————————————————
-    function roundHalfToEven(val, digits) {
-      const factor = 10 ** digits;
-      const x = val * factor;
-      const i = Math.floor(x);
-      const f = x - i;
-      if (Math.abs(f - 0.5) < 1e-12) {
-        return ((i % 2 === 0 ? i : i + 1) / factor);
+    </head>
+    <body>
+    <button class="back-btn" onclick="location.href='standard_solution2.html'"></button>
+    <div class="container">
+        <div class="result-title">계산 결과</div>
+        <div id="results"></div>
+        <div id="debug" class="debug-info"></div>
+    </div>
+
+    <script>
+      // ————————————————
+      // 1) 은행가 반올림 함수 (round half to even)
+      // ————————————————
+      function roundHalfToEven(val, digits) {
+        const factor = 10 ** digits;
+        const x = val * factor;
+        const i = Math.floor(x);
+        const f = x - i;
+        if (Math.abs(f - 0.5) < 1e-12) {
+          return ((i % 2 === 0 ? i : i + 1) / factor);
+        }
+        return Math.round(x) / factor;
       }
-      return Math.round(x) / factor;
-    }
 
-    // ————————————————
-    // 2) 불확도: 유효숫자 한 자리 + 은행가 반올림
-    // ————————————————
-    function roundUncertainty(u) {
-      if (u === 0) return 0;
+      // ————————————————
+      // 2) 불확도: 유효숫자 한 자리 + 은행가 반올림
+      // ————————————————
+      function roundUncertainty(u) {
+        if (u === 0) return 0;
 
-      const exponent = Math.floor(Math.log10(Math.abs(u)));
-      const scale = 10 ** exponent;
+        const exponent = Math.floor(Math.log10(Math.abs(u)));
+        const scale = 10 ** exponent;
 
-      // 스케일링 후 첫째 자리만 남기고 은행가 반올림
-      const scaled = u / scale; // 예: 0.00025 -> 2.5
-      const rounded = roundHalfToEven(scaled, 1); // 2.5 -> 2 (if 앞이 짝수)
-      
-      return rounded * scale;
-    }
+        // 스케일링 후 첫째 자리만 남기고 은행가 반올림
+        const scaled = u / scale; // 예: 0.00025 -> 2.5
+        const rounded = roundHalfToEven(scaled, 1); // 2.5 -> 2 (if 앞이 짝수)
+        
+        return rounded * scale;
+      }
 
-    // ————————————————
-    // 3) 값과 불확도의 자릿수 맞춤
-    // ————————————————
-    function formatValueWithUncertainty(value, uncertainty) {
-      if (uncertainty === 0) return value.toFixed(2);
-      
-      // 불확도의 유효숫자 위치 확인
-      const uncertExponent = Math.floor(Math.log10(Math.abs(uncertainty)));
-      const digits = Math.max(0, -uncertExponent);
-      
-      // 값과 불확도를 동일한 소수점 자리수로 반올림
-      const roundedValue = roundHalfToEven(value, digits);
-      const roundedUncert = roundHalfToEven(uncertainty, digits);
-      
-      return {
-        value: roundedValue.toFixed(digits),
-        uncertainty: roundedUncert.toFixed(digits)
+      // ————————————————
+      // 3) 값과 불확도의 자릿수 맞춤
+      // ————————————————
+      function formatValueWithUncertainty(value, uncertainty) {
+        if (uncertainty === 0) return value.toFixed(2);
+        
+        // 불확도의 유효숫자 위치 확인
+        const uncertExponent = Math.floor(Math.log10(Math.abs(uncertainty)));
+        const digits = Math.max(0, -uncertExponent);
+        
+        // 값과 불확도를 동일한 소수점 자리수로 반올림
+        const roundedValue = roundHalfToEven(value, digits);
+        const roundedUncert = roundHalfToEven(uncertainty, digits);
+        
+        return {
+          value: roundedValue.toFixed(digits),
+          uncertainty: roundedUncert.toFixed(digits)
+        };
+      }
+
+      window.onload = function() {
+        // 저장된 값 읽기 (localStorage 또는 document에서 가져올 수도 있음)
+        const m = parseFloat(localStorage.getItem('standard_m'));         // 용질 질량 [g]
+        const alpha = parseFloat(localStorage.getItem('standard_alpha'));  // 질량 불확도 [g]
+        const M = parseFloat(localStorage.getItem('standard_c'));          // 화학식량 [g/mol]
+        const V = parseFloat(localStorage.getItem('standardSolutionVolume')); // 부피 [mL]
+        const tool = localStorage.getItem('selectedTool');
+        const vol = localStorage.getItem('selectedVolume');
+        const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol)); // 부피 불확도 [mL]
+
+        // 입력값 검증
+        if ([m, alpha, M, V, beta].some(x => isNaN(x))) {
+          document.getElementById('results').innerHTML = "<div class='result' style='color:red;'>입력값 오류: 모든 값이 숫자여야 합니다.</div>";
+          return;
+        }
+
+        // 부피 단위 변환 (mL → L)
+        const VL = V / 1000;
+        const dVL = beta / 1000;
+
+        // 1) 용질의 양 n [mol], 불확도 dn
+        // dn 계산 시 상대불확도 곱하기 n으로
+        const n = m / M;
+        const relUncert_m = alpha / m;    // 질량 상대불확도
+        const dn_raw = relUncert_m * n;   // 몰수 절대불확도 (상대불확도 * n)
+        const dn = roundUncertainty(dn_raw);
+
+        // 2) 농도 C [mol/L], 불확도 dC
+        const C = n / VL;
+        // 농도 상대불확도 = 몰수 상대불확도 + 부피 상대불확도
+        const relUncert_C = (dn / n) + (dVL / VL);
+        const dC_raw = C * relUncert_C;
+        const dC = roundUncertainty(dC_raw);
+
+        // 3) 값과 불확도 포맷팅 (은행가 반올림 및 유효숫자 맞춤)
+        const nFormatted = formatValueWithUncertainty(n, dn);
+        const cFormatted = formatValueWithUncertainty(C, dC);
+
+        // 결과 출력
+        document.getElementById('results').innerHTML = `
+          <div class="result">
+            <strong>용질의 양 (n):</strong> ${nFormatted.value} ± ${nFormatted.uncertainty} mol
+          </div>
+          <div class="result">
+            <strong>표준용액 농도 (C):</strong> ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
+          </div>
+        `;
+
+        // 디버그용 (필요 시 주석 처리 가능)
+        document.getElementById('debug').innerHTML = `
+          <p><strong>디버그 정보</strong></p>
+          <p>m = ${m} g, α = ${alpha} g, M = ${M} g/mol</p>
+          <p>V = ${V} mL, β = ${beta} mL</p>
+          <p>n (몰수) 계산: ${n} mol, dn (불확도): ${dn}</p>
+          <p>C (농도) 계산: ${C} mol/L, dC (불확도): ${dC}</p>
+        `;
       };
-    }
-
-    window.onload = function() {
-      // 저장된 값 읽기
-      const m = parseFloat(localStorage.getItem('standard_m'));
-      const alpha = parseFloat(localStorage.getItem('standard_alpha'));
-      const M = parseFloat(localStorage.getItem('standard_c'));
-      const V = parseFloat(localStorage.getItem('standardSolutionVolume'));
-      const tool = localStorage.getItem('selectedTool');
-      const vol = localStorage.getItem('selectedVolume');
-      const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
-
-      // 검증
-      if ([m, alpha, M, V, beta].some(x => isNaN(x))) {
-        return document.getElementById('results')
-          .innerHTML = "<div class='result'>입력값 오류</div>";
-      }
-
-      // 1) 용질의 양 n, 불확도 dn
-      const n = m / M;
-      const dn = roundUncertainty(alpha / M);
-
-      // 2) 농도 C, 불확도 dC (상대불확도 합산)
-      const VL = V / 1000;
-      const dVL = beta / 1000;
-      const C = n / VL;
-      const rel = (dn / n) + (dVL / VL);
-      const dC = C * rel;
-
-      // 3) 값과 불확도 포맷팅
-      const nFormatted = formatValueWithUncertainty(n, dn);
-      const cFormatted = formatValueWithUncertainty(C, dC);
-
-      // 출력
-      document.getElementById('results').innerHTML = `
-        <div class="result">
-          용질의 양: ${nFormatted.value} ± ${nFormatted.uncertainty} mol
-        </div>
-        <div class="result">
-          표준용액의 농도: ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
-        </div>
-      `;
-
-      // 디버그
-      document.getElementById('debug').innerHTML = `
-        <p>디버그 정보:</p>
-        <p>m=${m} g, α=${alpha} g, M=${M} g/mol</p>
-        <p>V=${V} mL, β=${beta} mL</p>
-        <p>계산된 농도: ${C}, 불확도: ${dC}</p>
-      `;
-    };
-  </script>
-</body>
+    </script>
+    </body>
 </html>
