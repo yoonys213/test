@@ -193,7 +193,8 @@
             selectedVolume = vol;
             localStorage.setItem('selectedTool', currentTool);
             localStorage.setItem('selectedVolume', vol);
-            
+            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
+
             const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
@@ -204,6 +205,7 @@
                 showUncertaintySelection(uncertainties);
             }
         }
+
     
         function showUncertaintySelection(options) {
             const container = document.getElementById('buttonContainer');
