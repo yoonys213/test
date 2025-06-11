@@ -187,13 +187,14 @@
     
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
-            localStorage.setItem('selectedTool', currentTool);  // 추가된 코드
-            localStorage.setItem('selectedVolume', vol);        // 추가된 코드
-            
+            localStorage.setItem('selectedTool', currentTool);
+            localStorage.setItem('selectedVolume', vol);
+            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
+
             const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
-                localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);  // 변경된 코드
+                localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
                 alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
                 location.href = 'standard_solution2.html';
             } else {
