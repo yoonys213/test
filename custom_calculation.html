@@ -109,7 +109,7 @@
 </head>
 <body class="bg-[#729DF2] flex items-center justify-center h-screen">
   <!-- 뒤로 가기 버튼 (중앙 정렬) -->
-  <button onclick="try{location.href='calculsel.html';}catch(e){alert('이전 페이지로 이동할 수 없습니다.');}" 
+  <button onclick="try{location.href='계산기선택창.html';}catch(e){alert('이전 페이지로 이동할 수 없습니다.');}" 
         class="back-btn"></button>
 
           
@@ -194,13 +194,14 @@
   </div>
 
   <!-- 정보 모달 (X 버튼 추가) -->
-  <div id="infoModal" class="modal">
-    <div class="modal-content">
-      <button id="closeModalBtn" class="absolute top-4 right-4 text-2xl font-bold text-[#030BA6] hover:text-[#2E6FF2]">
+  <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+    <!-- 모달 내용 -->
+    <div class="bg-white p-8 rounded-2xl max-h-[80vh] max-w-[90vw] overflow-y-auto overflow-x-hidden relative">
+        <button id="closeModalBtn" class="absolute top-4 right-4 text-2xl font-bold text-[#030BA6] hover:text-[#2E6FF2]">
         ✕
-      </button>
-      <h2 class="text-[#030BA6] text-3xl font-bold mb-4">계산기 사용법</h2>
-      <ul class="list-disc pl-5 space-y-2 text-[#030BA6]">
+        </button>
+        <h2 class="text-[#030BA6] text-3xl font-bold mb-4">계산기 사용법</h2>
+        <ul class="list-disc pl-5 space-y-2 text-[#030BA6]">
         <li>1. 키보드로 숫자를 입력하여 '값'과 '불확도' 칸을 채웁니다.</li>
         <li>2. 측정값 → 불확도 순으로 수를 입력하세요.</li>
         <li>3. 화면의 0.001, 0.01 버튼을 누르면 '불확도' 칸에 해당 값이 자동적으로 입력됩니다.</li>
@@ -209,10 +210,11 @@
         <li>6. 식의 마지막에 등호(=) 버튼을 누르거나, 입력 칸에서 Enter 키를 누르면 계산 결과가 Result 박스에 나타납니다.</li>
         <li>7. 식을 다시 입력하고 싶을 시엔 C 버튼을 눌러 초기화합니다.</li>
         <li>8. 이전 계산 결과가 있는 상태에서 바로 연산자 버튼을 누르면, 이전 결과를 첫 번째 값으로 사용하여 계산을 이어갈 수 있습니다.</li>
-      </ul>
+        </ul>
     </div>
-  </div>
+    </div>
     <script>
+        
         let values = [];
         let uncertainties = [];
         let operations = [];
