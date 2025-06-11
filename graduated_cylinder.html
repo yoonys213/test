@@ -189,22 +189,17 @@
         // 부피 선택 처리
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
-            
-            // localStorage에 기구 정보 저장
             localStorage.setItem('selectedTool', currentTool);
             localStorage.setItem('selectedVolume', vol);
-            
+            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
+
             const uncertainties = volumeData[currentTool][vol];
-            
-            // 1. 불확도 옵션이 하나일 때 (50mL, 100mL)
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
                 alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
                 location.href = 'standard_solution2.html';
-            } 
-            // 2. 불확도 옵션이 여러 개일 때 (10mL)
-            else {
+            } else {
                 showUncertaintySelection(uncertainties);
             }
         }
