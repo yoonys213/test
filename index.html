@@ -10,7 +10,6 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
-
         }
         
         body {
@@ -20,7 +19,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: url('assets/bg-main.jpg') no-repeat center center;
+            background: url('로비 백그라운드.png') no-repeat center center;
             background-size: cover;
             position: relative;
         }
@@ -58,17 +57,28 @@
             color: white;
             text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="footer">30317 이나경, 30402 김예은, 30520 윤용수</div>
+
+
     
-    <button class="btn btn-calculator" onclick=location.href='calculsel.html'>불확도 계산기</button>
+    <button class="btn btn-calculator" onclick="openCalculatorSelection()">불확도 계산기</button>
     <button class="btn btn-about" onclick="location.href='uncertainty.html'">불확도란?</button>
     <button class="btn btn-importance" onclick="location.href='importance.html'">불확도가 왜 중요할까?</button>
 
     <script>
-        // 계산기 선택창 열기 함수
         function openCalculatorSelection() {
             // 현재 창을 닫고 새 창으로 이동
             window.open('calculsel.html', '_self');
