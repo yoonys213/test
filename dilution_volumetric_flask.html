@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>부피 플라스크 선택</title>
     <style>
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
         }
-        
+
         body {
             height: 100vh;
             margin: 0;
@@ -23,7 +22,7 @@
             background-color: #020873;
             padding: 20px;
         }
-        
+
         .main-content {
             display: flex;
             flex-direction: column;
@@ -31,13 +30,13 @@
             max-width: 800px;
             margin-top: -5%;
         }
-        
+
         .header {
             width: calc(110px * 4 + 20px * 3);
             margin-left: 85px;
             margin-bottom: 30px;
         }
-        
+
         .title {
             font-size: 80px;
             font-weight: 1000;
@@ -49,7 +48,7 @@
             margin-bottom: 15px;
             white-space: nowrap;
         }
-        
+
         .instruction {
             font-size: 28px;
             color: white;
@@ -57,7 +56,7 @@
             text-align: left;
             margin-left: 0px;
         }
-        
+
         .button-container {
             display: flex;
             gap: 20px;
@@ -68,7 +67,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         .tool-btn {
             width: 94px;
             height: 94px;
@@ -90,12 +89,12 @@
             text-align: center;
             line-height: 1.2;
         }
-        
+
         .tool-btn:hover {
             transform: translateY(-8px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
-        
+
         .back-btn {
             position: absolute;
             left: 3vw;
@@ -117,12 +116,12 @@
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        
+
         .back-btn:hover {
             transform: translateY(-50%) scale(1.2);
             text-shadow: 0 0 15px rgba(0,0,0,0.8);
         }
-        
+
         .back-btn::before {
             content: "〈";
             display: block;
@@ -133,17 +132,18 @@
             .main-content {
                 padding: 8%;
             }
+
             .back-btn {
                 left: 2vw;
                 font-size: clamp(30px, 8vw, 50px);
             }
+
             .tool-btn {
                 width: 90px;
                 height: 90px;
                 font-size: 16px;
             }
         }
-    
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
@@ -154,11 +154,12 @@
             <h1 class="title">부피플라스크</h1>
             <p class="instruction" id="step">측정 부피를 선택하세요</p>
         </div>
-        
+
         <div class="button-container" id="buttonContainer">
             <!-- 동적으로 버튼 생성 -->
         </div>
     </div>
+
     <script>
         const volumeData = {
             "부피 플라스크": {
@@ -171,15 +172,15 @@
                 500: [0.5]
             }
         };
-    
+
         let selectedVolume = 0;
         let selectedUncertainty = 0;
-        const currentTool = "부피 플라스크"; // 파일마다 다르게 설정
-    
+        const currentTool = "부피 플라스크";
+
         function renderButtons() {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
-    
+
             Object.keys(volumeData[currentTool]).forEach(vol => {
                 const button = document.createElement('button');
                 button.className = 'tool-btn';
@@ -188,33 +189,32 @@
                 container.appendChild(button);
             });
         }
-    
+
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
+            const uncertainties = volumeData[currentTool][vol];
+
             localStorage.setItem('selectedTool', currentTool);
             localStorage.setItem('selectedVolume', vol);
-            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
+            localStorage.setItem('standardSolutionVolume', vol);
             localStorage.setItem('V2', vol);
-            localStorage.setItem('gamma', selectedUncertainty);
 
-
-            const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`${vol}mL .부피 플라스크의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
+                localStorage.setItem('gamma', selectedUncertainty);
+                alert(`${vol}mL 부피 플라스크의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
                 location.href = 'dilution2.html';
             } else {
                 showUncertaintySelection(uncertainties);
             }
         }
 
-    
         function showUncertaintySelection(options) {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
             document.getElementById('step').textContent = '불확도를 선택하세요';
-    
+
             options.forEach(unc => {
                 const btn = document.createElement('button');
                 btn.className = 'tool-btn';
@@ -229,9 +229,8 @@
                 container.appendChild(btn);
             });
         }
-    
+
         window.onload = renderButtons;
     </script>
-    
 </body>
 </html>
