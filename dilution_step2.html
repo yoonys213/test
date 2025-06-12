@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>눈금실린더 선택</title>
+    <title>피펫 선택</title>
     <style>
         * {
             margin: 0;
@@ -11,7 +11,7 @@
             box-sizing: border-box;
             font-family: 'Noto Sans KR', sans-serif;
         }
-        
+
         body {
             height: 100vh;
             margin: 0;
@@ -22,7 +22,7 @@
             background-color: #020873;
             padding: 20px;
         }
-        
+
         .main-content {
             display: flex;
             flex-direction: column;
@@ -30,13 +30,13 @@
             max-width: 800px;
             margin-top: -5%;
         }
-        
+
         .header {
             width: calc(110px * 4 + 20px * 3);
             margin-left: 85px;
             margin-bottom: 30px;
         }
-        
+
         .title {
             font-size: 80px;
             font-weight: 1000;
@@ -48,7 +48,7 @@
             margin-bottom: 15px;
             white-space: nowrap;
         }
-        
+
         .instruction {
             font-size: 28px;
             color: white;
@@ -56,7 +56,7 @@
             text-align: left;
             margin-left: 0px;
         }
-        
+
         .button-container {
             display: flex;
             gap: 20px;
@@ -67,7 +67,7 @@
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         .tool-btn {
             width: 110px;
             height: 110px;
@@ -89,12 +89,12 @@
             text-align: center;
             line-height: 1.2;
         }
-        
+
         .tool-btn:hover {
             transform: translateY(-8px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
-        
+
         .back-btn {
             position: absolute;
             left: 3vw;
@@ -116,12 +116,12 @@
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-        
+
         .back-btn:hover {
             transform: translateY(-50%) scale(1.2);
             text-shadow: 0 0 15px rgba(0,0,0,0.8);
         }
-        
+
         .back-btn::before {
             content: "〈";
             display: block;
@@ -146,33 +146,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='standard_solution1.html'"></button>
+    <button class="back-btn" onclick="location.href='dilution_step1.html'"></button>
     <div class="main-content">
         <div class="header">
-            <h1 class="title">눈금실린더</h1>
+            <h1 class="title">피펫</h1>
             <p class="instruction" id="step">측정 부피를 선택하세요</p>
         </div>
-        
+
         <div class="button-container" id="buttonContainer">
             <!-- 동적으로 버튼 생성 -->
         </div>
     </div>
 
     <script>
-        // 기구별 불확도 데이터 (단위: mL)
         const volumeData = {
-            "눈금 실린더": {
-                10: [0.05, 0.2],  // 10mL: 두 가지 불확도 옵션
-                50: [1],          // 50mL: 단일 불확도
-                100: [1]          // 100mL: 단일 불확도
+            "피펫": {
+                1: [0.01],
+                5: [0.05],
+                10: [0.03, 0.05],
+                20: [0.05, 0.06, 0.1],
+                25: [0.1]
             }
         };
 
         let selectedVolume = 0;
         let selectedUncertainty = 0;
-        const currentTool = "눈금 실린더";  // 반드시 volumeData의 키와 일치해야 함
+        const currentTool = "피펫";
 
-        // 초기 버튼 렌더링
         function renderButtons() {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
@@ -186,25 +186,31 @@
             });
         }
 
-        // 부피 선택 처리
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
-            localStorage.setItem('selectedTool', currentTool);
-            localStorage.setItem('selectedVolume', vol);
-            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
-
             const uncertainties = volumeData[currentTool][vol];
+
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
+
+                localStorage.setItem('selectedTool', currentTool);
+                localStorage.setItem('selectedVolume', vol);
+                localStorage.setItem('standardSolutionVolume', vol);
+                localStorage.setItem('V1', vol);
+                localStorage.setItem('beta', selectedUncertainty);
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
-                location.href = 'standard_solution2.html';
+
+                alert(`${vol}mL 피펫의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
+                location.href = 'dilution_step3.html';
             } else {
+                localStorage.setItem('selectedTool', currentTool);
+                localStorage.setItem('selectedVolume', vol);
+                localStorage.setItem('standardSolutionVolume', vol);
+                localStorage.setItem('V1', vol);
                 showUncertaintySelection(uncertainties);
             }
         }
 
-        // 불확도 선택 화면 표시
         function showUncertaintySelection(options) {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
@@ -216,23 +222,16 @@
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
                     selectedUncertainty = unc;
-                    // 기구명+부피를 조합한 고유 키로 저장 (예: uncertainty_눈금 실린더_10)
+                    localStorage.setItem('beta', selectedUncertainty);
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    alert(`${selectedVolume}mL 눈금 실린더의 불확도 ±${selectedUncertainty} 선택됨`);
-                    location.href = 'standard_solution2.html';
+
+                    alert(`${selectedVolume}mL 피펫의 불확도 ±${selectedUncertainty} 선택됨`);
+                    location.href = 'dilution_step3.html';
                 };
                 container.appendChild(btn);
             });
-
-            // 뒤로 가기 버튼 추가 (부피 재선택 가능)
-            const backBtn = document.createElement('button');
-            backBtn.className = 'tool-btn';
-            backBtn.textContent = '뒤로';
-            backBtn.onclick = renderButtons;
-            container.appendChild(backBtn);
         }
 
-        // 페이지 로드 시 버튼 생성
         window.onload = renderButtons;
     </script>
 </body>

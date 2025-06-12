@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>가수 입력</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #030BA6;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 5vh;
+            padding-bottom: 20px;
+        }
+        .title {
+            font-size: 80px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .prompt {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-left: 50px;
+        }
+        .input-label {
+            font-size: 30px;
+            width: 300px;
+            margin-right: 15px;
+        }
+        .value-input-container {
+            display: flex;
+            align-items: center;
+        }
+        input {
+            width: 150px;
+            padding: 15px;
+            font-size: 30px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: white;
+        }
+        .submit-btn {
+            padding: 15px 30px;
+            font-size: 25px;
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+        }
+        .submit-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+        @media (max-width: 768px) {
+            .content {
+                padding: 8%;
+            }
+            .back-btn {
+                left: 2vw;
+                font-size: clamp(30px, 8vw, 50px);
+            }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='titration_step3.html'"></button>
+    <div class="container">
+        <div class="title">중화적정</div>
+        <div class="prompt">5) 두 용액의 가수를 입력해주세요</div>
+
+        <div class="input-group">
+            <div class="input-label">표준 용액의 가수 (n₁)</div>
+            <div class="value-input-container">
+                <input id="n1" type="number" step="any" >
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-label">미지 용액의 가수 (n₂)</div>
+            <div class="value-input-container">
+                <input id="n2" type="number" step="any" >
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="submitData()">입력 완료</button>
+    </div>
+
+    <script>
+        // 페이지 로드 시 저장된 값 불러오기
+        window.onload = function () {
+            
+        };
+
+        function submitData() {
+            const titration_n1 = parseFloat(document.getElementById("n1").value);
+            const titration_n2 = parseFloat(document.getElementById("n2").value);
+
+            if (isNaN(titration_n1) || isNaN(titration_n2)) {
+                alert("두 값을 모두 올바르게 입력해주세요.");
+                return;
+            }
+
+            localStorage.setItem("titration_n1", titration_n1);
+            localStorage.setItem("titration_n2", titration_n2);
+
+            alert("저장되었습니다!");
+            window.location.href = "titration2.html"; // 다음 HTML 파일명에 맞게 수정
+        }
+    </script>
+</body>
+</html>

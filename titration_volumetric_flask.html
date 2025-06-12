@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>눈금실린더 선택</title>
+    <title>부피 플라스크 선택</title>
     <style>
+        
         * {
             margin: 0;
             padding: 0;
@@ -69,8 +71,8 @@
         }
         
         .tool-btn {
-            width: 110px;
-            height: 110px;
+            width: 94px;
+            height: 94px;
             border-radius: 50%;
             border: none;
             background-color: white;
@@ -142,14 +144,15 @@
                 font-size: 16px;
             }
         }
+    
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='standard_solution1.html'"></button>
+    <button class="back-btn" onclick="location.href='titration_step3.html'"></button>
     <div class="main-content">
         <div class="header">
-            <h1 class="title">눈금실린더</h1>
+            <h1 class="title">부피플라스크</h1>
             <p class="instruction" id="step">측정 부피를 선택하세요</p>
         </div>
         
@@ -157,26 +160,27 @@
             <!-- 동적으로 버튼 생성 -->
         </div>
     </div>
-
     <script>
-        // 기구별 불확도 데이터 (단위: mL)
         const volumeData = {
-            "눈금 실린더": {
-                10: [0.05, 0.2],  // 10mL: 두 가지 불확도 옵션
-                50: [1],          // 50mL: 단일 불확도
-                100: [1]          // 100mL: 단일 불확도
+            "부피 플라스크": {
+                10: [0.05],
+                25: [0.08],
+                50: [0.12],
+                100: [0.2, 0.8],
+                200: [0.3],
+                250: [0.15],
+                500: [0.5]
             }
         };
-
+    
         let selectedVolume = 0;
         let selectedUncertainty = 0;
-        const currentTool = "눈금 실린더";  // 반드시 volumeData의 키와 일치해야 함
-
-        // 초기 버튼 렌더링
+        const currentTool = "부피 플라스크"; // 파일마다 다르게 설정
+    
         function renderButtons() {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
-
+    
             Object.keys(volumeData[currentTool]).forEach(vol => {
                 const button = document.createElement('button');
                 button.className = 'tool-btn';
@@ -185,55 +189,51 @@
                 container.appendChild(button);
             });
         }
-
-        // 부피 선택 처리
+    
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
             localStorage.setItem('selectedTool', currentTool);
             localStorage.setItem('selectedVolume', vol);
             localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
+            localStorage.setItem('titration_V2', vol);
+            localStorage.setItem('titration_theta', selectedUncertainty);
+
 
             const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
-                location.href = 'standard_solution2.html';
+                localStorage.setItem('titration_theta', selectedUncertainty);
+                alert(`${vol}mL .부피 플라스크의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
+                location.href = 'titration_step4.html';
             } else {
                 showUncertaintySelection(uncertainties);
             }
         }
 
-        // 불확도 선택 화면 표시
+    
         function showUncertaintySelection(options) {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
             document.getElementById('step').textContent = '불확도를 선택하세요';
-
+    
             options.forEach(unc => {
                 const btn = document.createElement('button');
                 btn.className = 'tool-btn';
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
                     selectedUncertainty = unc;
-                    // 기구명+부피를 조합한 고유 키로 저장 (예: uncertainty_눈금 실린더_10)
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    alert(`${selectedVolume}mL 눈금 실린더의 불확도 ±${selectedUncertainty} 선택됨`);
-                    location.href = 'standard_solution2.html';
+                    localStorage.setItem('titration_theta', selectedUncertainty);
+                    alert(`${selectedVolume}mL 부피 플라스크의 불확도 ±${selectedUncertainty} 선택됨`);
+                    location.href = 'titration_step4.html';
                 };
                 container.appendChild(btn);
             });
-
-            // 뒤로 가기 버튼 추가 (부피 재선택 가능)
-            const backBtn = document.createElement('button');
-            backBtn.className = 'tool-btn';
-            backBtn.textContent = '뒤로';
-            backBtn.onclick = renderButtons;
-            container.appendChild(backBtn);
         }
-
-        // 페이지 로드 시 버튼 생성
+    
         window.onload = renderButtons;
     </script>
+    
 </body>
 </html>

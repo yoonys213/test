@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>희석 계산기 - Step 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #030BA6;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 5vh;
+        }
+        .title {
+            font-size: 80px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .prompt {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: left;
+            margin-left: 50px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-left: 50px;
+        }
+        .input-label {
+            font-size: 30px;
+            width: 300px;
+            margin-right: 15px;
+        }
+        .value-input-container {
+            display: flex;
+            align-items: center;
+        }
+        input {
+            width: 250px;
+            padding: 20px;
+            font-size: 36px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        input:focus {
+            outline: none;
+            border-color: white;
+        }
+        input.error {
+            border-color: #ff6b6b;
+            animation: shake 0.5s;
+        }
+        .uncertainty-input {
+            margin-left: 10px;
+        }
+        .plus-minus {
+            font-size: 30px;
+            margin: 0 10px;
+        }
+        .unit {
+            font-size: 30px;
+            min-width: 80px;
+            margin-left: 10px;
+        }
+        .submit-btn {
+            padding: 20px 40px;
+            font-size: 30px;
+            font-weight: bold;
+            background-color: white;
+            color: #030BA6;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            display: block;
+            margin: 40px auto 0;
+        }
+        .submit-btn.error {
+            border-color: #ff6b6b;
+        }
+        .submit-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .back-btn {
+            position: absolute;
+            left: 3vw;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: clamp(40px, 8vw, 60px);
+            font-weight: 900;
+            cursor: pointer;
+            background: transparent;
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+            border: none;
+            outline: none;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.2);
+            text-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        .back-btn::before {
+            content: "〈";
+            display: block;
+            line-height: 1;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='계산기선택창.html'"></button>
+    <div class="container">
+        <div class="title">중화적정</div>
+        <div class="prompt">1) 농도를 아는 용액의 농도를 입력해주세요 </div>
+
+        <!-- 희석 전 용액의 농도 -->
+        <div class="input-group">
+            
+            <div class="value-input-container">
+                <input type="number" id="titration_M" min="0" step="0.01">
+                <span class="plus-minus">±</span>
+                <input type="number" id="titration_alpha" class="uncertainty-input" min="0" step="0.01">
+                <span class="unit">M</span>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="validateStep1()">다음</button>
+    </div>
+
+    <script>
+        function validateStep1() {
+            const titration_M = document.getElementById('titration_M');
+            const titration_alpha = document.getElementById('titration_alpha');
+            const submitBtn = document.querySelector('.submit-btn');
+
+            titration_M.classList.remove('error');
+            titration_alpha.classList.remove('error');
+            submitBtn.classList.remove('error');
+
+            let valid = true;
+
+            if (!titration_M.value.trim() || parseFloat(titration_M.value) <= 0) {
+                titration_M.classList.add('error');
+                
+                valid = false;
+            }
+
+            if (!titration_alpha.value.trim() || parseFloat(titration_alpha.value) < 0) {
+                titration_alpha.classList.add('error');
+                
+                valid = false;
+            }
+
+            if (!valid) {
+                submitBtn.classList.add('error');
+                return;
+            }
+
+            localStorage.setItem('titration_M', parseFloat(titration_M.value));
+            localStorage.setItem('titration_alpha', parseFloat(titration_alpha.value));
+
+            // 다음 단계로 이동
+            window.location.href = "titration_step2.html"; // 다음 HTML 파일명에 맞게 수정
+        }
+    </script>
+</body>
+</html>
