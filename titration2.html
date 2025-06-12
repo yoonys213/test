@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>중화적정 결과</title>
     <style>
         body {
@@ -72,7 +72,27 @@
             <span class="value-box" id="finalConcUncertainty"></span>
             <span>M</span>
         </div>
-        <button class="back-btn" onclick="window.location.href='titration1.html'">돌아가기</button>
+
+        <!-- 계산 과정 표시 영역 (스크롤 박스) -->
+        <div
+            id="calculationProcess"
+            style="
+                margin-top: 20px;
+                background: #ffffff;
+                color: #030A80;
+                padding: 5px;
+                border-radius: 8px;
+                font-family: monospace;
+                white-space: pre-line;
+                max-height: 220px;
+                overflow-y: auto;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+                width: 400px;
+                margin: 20px auto 0 auto;
+            "
+        ></div>
+
+        <button class="back-btn" onclick="window.location.href='titration_step1.html'">돌아가기</button>
     </div>
 
     <script>
@@ -87,60 +107,121 @@
         const n2 = parseInt(localStorage.getItem('titration_n2'));
 
         // 값이 없을 경우 오류 처리
-        if (isNaN(M) || isNaN(alpha) || isNaN(V1) || isNaN(beta) || 
-            isNaN(V2) || isNaN(theta) || isNaN(n1) || isNaN(n2)) {
-            alert("입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.");
-            window.location.href = "titration1.html";
+        if (
+            isNaN(M) ||
+            isNaN(alpha) ||
+            isNaN(V1) ||
+            isNaN(beta) ||
+            isNaN(V2) ||
+            isNaN(theta) ||
+            isNaN(n1) ||
+            isNaN(n2)
+        ) {
+            alert('입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.');
+            window.location.href = 'titration_step1.html';
         }
 
-        // 정확한 반올림 함수 (0.051 → 0.05)
-        function preciseRound(value, decimals) {
-            const factor = 10 ** decimals;
-            const multiplied = value * factor;
-            const decimalPart = (multiplied - Math.floor(multiplied)).toFixed(3);
-            
-            if (decimalPart === "0.500") {
-                const intPart = Math.floor(multiplied);
-                return (intPart % 2 === 0) ? intPart / factor : (intPart + 1) / factor;
+        // 은행가 반올림 함수 (round half to even)
+        function roundHalfToEven(val, digits) {
+            const factor = 10 ** digits;
+            const x = val * factor;
+            const i = Math.floor(x);
+            const f = x - i;
+
+            if (Math.abs(f - 0.5) < 1e-12) {
+                return (i % 2 === 0 ? i : i + 1) / factor;
             }
-            return Math.round(multiplied) / factor;
+            return Math.round(x) / factor;
+        }
+
+        // 불확도: 유효숫자 한 자리 + 은행가 반올림
+        function roundUncertainty(u) {
+            if (u === 0) return 0;
+
+            const exponent = Math.floor(Math.log10(Math.abs(u)));
+            const scale = 10 ** exponent;
+
+            const scaled = u / scale;
+            const rounded = roundHalfToEven(scaled, 1);
+
+            return rounded * scale;
+        }
+
+        // 값과 불확도의 자릿수 맞춤
+        function formatValueWithUncertainty(value, uncertainty) {
+            if (uncertainty === 0)
+                return { value: value.toFixed(2), uncertainty: '0' };
+
+            const roundedUnc = roundUncertainty(uncertainty);
+            const uncertExponent = Math.floor(Math.log10(Math.abs(roundedUnc)));
+            const digits = Math.max(0, -uncertExponent);
+
+            const roundedValue = roundHalfToEven(value, digits);
+
+            return {
+                value: roundedValue.toFixed(digits),
+                uncertainty: roundedUnc.toFixed(digits),
+            };
         }
 
         // 중화적정 계산 함수
         function calculateTitration() {
-            // 1. 미지 용액 농도 계산: [H] = (M × V1 × n2) / (V2 × n1)
-            const H = (M * V1 * n2) / (V2 * n1);
-            
-            // 2. 상대 불확도 계산 (합연산)
-            const relUnc = (alpha/M) + (beta/V1) + (theta/V2);
-            
-            // 3. 절대 불확도 계산
+            const numerator = M * V1 * n2;
+            const denominator = V2 * n1;
+            const H = numerator / denominator;
+
+            const relUnc = alpha / M + beta / V1 + theta / V2;
+
             const deltaH = H * relUnc;
-            
-            // 4. 반올림 처리
+
+            const formatted = formatValueWithUncertainty(H, deltaH);
+
             return {
-                conc: preciseRound(H, 2),
-                unc: preciseRound(deltaH, 2)
+                ...formatted,
+                raw: { H, deltaH, relUnc, numerator, denominator },
             };
+        }
+
+        // 계산 과정 표시 함수
+        function displayCalculationProcess({ numerator, denominator, relUnc, H, deltaH }) {
+            const container = document.getElementById('calculationProcess');
+            container.innerHTML = `
+계산 과정
+────────────────────────────
+1. 입력 값
+- 표준 용액의 농도 (M) : ${M}
+- 표준 용액의 부피 (V₁) : ${V1}
+- 미지 용액의 부피 (V₂) : ${V2}
+- 표준 용액의 가수 (n₁) : ${n1}
+- 미지 용액의 가수 (n₂) : ${n2}
+
+2. 미지 용액 농도 계산
+[H] = (M × V₁ × n₂) / (V₂ × n₁)
+    = (${M} × ${V1} × ${n2}) / (${V2} × ${n1})
+    = ${numerator.toFixed(4)} / ${denominator.toFixed(4)}
+    = ${H.toFixed(6)}
+
+3. 상대 불확도 계산
+(α / M) + (β / V₁) + (θ / V₂)
+= (${alpha} / ${M}) + (${beta} / ${V1}) + (${theta} / ${V2})
+= ${relUnc.toFixed(6)}
+
+4. 절대 불확도 계산
+ΔH = [H] × 상대 불확도
+    = ${H.toFixed(6)} × ${relUnc.toFixed(6)}
+    = ${deltaH.toFixed(6)}
+────────────────────────────
+            `;
         }
 
         // 결과 표시
         function displayResults() {
-            const { conc, unc } = calculateTitration();
-            document.getElementById('finalConcValue').textContent = conc.toFixed(2);
-            document.getElementById('finalConcUncertainty').textContent = unc.toFixed(2);
-            
-            // 디버깅 로그 (필요시 주석 해제)
-            /*
-            console.log("계산식: (M × V1 × n2) / (V2 × n1)");
-            console.log(`= (${M} × ${V1} × ${n2}) / (${V2} × ${n1})`);
-            console.log(`상대불확도: (${alpha}/${M}) + (${beta}/${V1}) + (${theta}/${V2})`);
-            console.log(`= ${(alpha/M + beta/V1 + theta/V2).toFixed(4)}`);
-            console.log(`절대불확도: ${H} × ${relUnc} = ${deltaH}`);
-            */
+            const result = calculateTitration();
+            document.getElementById('finalConcValue').textContent = result.value;
+            document.getElementById('finalConcUncertainty').textContent = result.uncertainty;
+            displayCalculationProcess(result.raw);
         }
 
-        // 페이지 로드 시 실행
         window.onload = displayResults;
     </script>
 </body>
