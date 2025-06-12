@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뷰렛 선택</title>
+    <title>부피 플라스크 선택</title>
     <style>
         
         * {
@@ -70,8 +70,8 @@
         }
         
         .tool-btn {
-            width: 110px;
-            height: 110px;
+            width: 94px;
+            height: 94px;
             border-radius: 50%;
             border: none;
             background-color: white;
@@ -148,7 +148,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <button class="back-btn" onclick="location.href='standard_solution1.html'"></button>
+    <button class="back-btn" onclick="location.href='계산기선택창.html'"></button>
     <div class="main-content">
         <div class="header">
             <h1 class="title">부피플라스크</h1>
@@ -199,7 +199,7 @@
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
+                alert(`${vol}mL .부피 플라스크의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
                 location.href = 'standard_solution2.html';
             } else {
                 showUncertaintySelection(uncertainties);
@@ -219,7 +219,7 @@
                 btn.onclick = () => {
                     selectedUncertainty = unc;
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    alert(`${selectedVolume}mL 눈금 실린더의 불확도 ±${selectedUncertainty} 선택됨`);
+                    alert(`${selectedVolume}mL 부피 플라스크의 불확도 ±${selectedUncertainty} 선택됨`);
                     location.href = 'standard_solution2.html';
                 };
                 container.appendChild(btn);
