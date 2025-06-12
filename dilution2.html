@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>희석 결과</title>
     <style>
         body {
@@ -68,6 +68,20 @@
         .back-btn:hover {
             background-color: #f0f0f0;
         }
+        #calculationProcess {
+            margin-top: 20px;
+            background: #ffffff;
+            color: #030A80;
+            padding: 5px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-line;
+            max-height: 220px;
+            overflow-y: auto;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+            width: 400px; /* 여기서 가로 길이 조절 */
+            margin: 20px auto 0 auto;
+        }
     </style>
 </head>
 <body>
@@ -79,57 +93,147 @@
             <span class="value-box" id="finalConcUncertainty"></span>
             <span class="unit">M</span>
         </div>
-        <button class="back-btn" onclick="window.location.href='dilution1.html'">돌아가기</button>
+
+        <!-- 계산 과정 보여줄 박스 -->
+        <div id="calculationProcess"></div>
+
+        <button class="back-btn" onclick="window.location.href='dilution_step1.html'">돌아가기</button>
     </div>
 
     <script>
         // localStorage에서 값 가져오기
-        const C1 = parseFloat(localStorage.getItem('C1'));
-        const alpha = parseFloat(localStorage.getItem('alpha'));
-        const V1 = parseFloat(localStorage.getItem('V1'));
-        const beta = parseFloat(localStorage.getItem('beta'));
-        const V2 = parseFloat(localStorage.getItem('V2'));
-        const gamma = parseFloat(localStorage.getItem('gamma'));
+        const C1 = parseFloat(localStorage.getItem('C1'));       // 희석 전 용액의 농도
+        const alpha = parseFloat(localStorage.getItem('alpha')); // 불확도 (농도)
+        const V1 = parseFloat(localStorage.getItem('V1'));       // 희석 전 용액의 부피
+        const beta = parseFloat(localStorage.getItem('beta'));   // 불확도 (V1)
+        const V2 = parseFloat(localStorage.getItem('V2'));       // 희석 후 용액의 부피
+        const gamma = parseFloat(localStorage.getItem('gamma')); // 불확도 (V2)
 
-        // 값이 없을 경우 오류 처리
-        if (isNaN(C1) || isNaN(alpha) || isNaN(V1) || isNaN(beta) || isNaN(V2) || isNaN(gamma)) {
+        // 값 없으면 경고 및 이전 페이지로
+        if (
+            isNaN(C1) || isNaN(alpha) || isNaN(V1) ||
+            isNaN(beta) || isNaN(V2) || isNaN(gamma)
+        ) {
             alert("입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.");
-            window.location.href = "dilution1.html";
+            window.location.href = "dilution_step1.html";
         }
 
-        // 정확한 반올림 함수
-        function preciseRound(value, decimals) {
-            const factor = 10 ** decimals;
-            const multiplied = value * factor;
-            const decimalPart = (multiplied - Math.floor(multiplied)).toFixed(3);
-            
-            if (decimalPart === "0.500") {
-                const intPart = Math.floor(multiplied);
-                return (intPart % 2 === 0) ? intPart / factor : (intPart + 1) / factor;
+        // 은행가 반올림 함수 (round half to even)
+        function roundHalfToEven(val, digits) {
+            const factor = 10 ** digits;
+            const x = val * factor;
+            const i = Math.floor(x);
+            const f = x - i;
+            if (Math.abs(f - 0.5) < 1e-12) {
+                return ((i % 2 === 0 ? i : i + 1) / factor);
             }
-            return Math.round(multiplied) / factor;
+            return Math.round(x) / factor;
+        }
+
+        // 불확도 반올림
+        function roundUncertainty(u) {
+            if (u === 0) return 0;
+            const exponent = Math.floor(Math.log10(Math.abs(u)));
+            const scale = 10 ** exponent;
+            const scaled = u / scale;
+            const rounded = roundHalfToEven(scaled, 1);
+            return rounded * scale;
+        }
+
+        // 값과 불확도 자리 맞추기
+        function formatValueWithUncertainty(value, uncertainty) {
+            if (uncertainty === 0) return { value: value.toFixed(2), uncertainty: "0" };
+            const roundedUnc = roundUncertainty(uncertainty);
+            const uncertExponent = Math.floor(Math.log10(Math.abs(roundedUnc)));
+            const digits = Math.max(0, -uncertExponent);
+            const roundedValue = roundHalfToEven(value, digits);
+            return {
+                value: roundedValue.toFixed(digits),
+                uncertainty: roundedUnc.toFixed(digits),
+            };
         }
 
         // 희석 계산 함수
         function calculateDilution() {
+            // 농도 계산
             const C2 = (C1 * V1) / V2;
-            const relUnc = (alpha/C1) + (beta/V1) + (gamma/V2);
+
+            // 상대 불확도 (합연산)
+            const relUnc = (alpha / C1) + (beta / V1) + (gamma / V2);
+
+            // 절대 불확도
             const deltaC2 = C2 * relUnc;
-            
-            return {
-                conc: preciseRound(C2, 2),
-                unc: preciseRound(deltaC2, 2)
-            };
+
+            return formatValueWithUncertainty(C2, deltaC2);
         }
 
-        // 결과 표시
-        function displayResults() {
-            const { conc, unc } = calculateDilution();
-            document.getElementById('finalConcValue').textContent = conc.toFixed(2);
-            document.getElementById('finalConcUncertainty').textContent = unc.toFixed(2);
+        // 계산 과정 출력 함수
+        function showCalculationProcess() {
+            const C2 = (C1 * V1) / V2;
+            const relUnc = (alpha / C1) + (beta / V1) + (gamma / V2);
+            const deltaC2 = C2 * relUnc;
+
+            // 불확도 반올림 과정
+            const roundedDelta = roundUncertainty(deltaC2);
+
+            // 불확도 자리수 계산
+            const uncertExponent = Math.floor(Math.log10(Math.abs(roundedDelta)));
+            const digits = Math.max(0, -uncertExponent);
+
+            // 값 반올림
+            const roundedValue = roundHalfToEven(C2, digits);
+
+            // 계산 과정 문자열 생성
+            const processText =
+`
+계산 과정
+────────────────────────────
+[입력값]
+희석 전 용액 농도 (C1) = ${C1}
+희석 전 용액 부피 (V1) = ${V1}
+희석 후 용액 부피 (V2) = ${V2}
+불확도 (α, β, γ) = (${alpha}, ${beta}, ${gamma})
+
+1) 희석 후 농도 계산:
+   C2 = (C1 × V1) / V2
+      = (${C1} × ${V1}) / ${V2}
+      = ${C2.toFixed(6)}
+
+2) 상대 불확도 계산:
+   상대 불확도 = (α / C1) + (β / V1) + (γ / V2)
+               = (${alpha} / ${C1}) + (${beta} / ${V1}) + (${gamma} / ${V2})
+               = ${relUnc.toFixed(6)}
+
+3) 절대 불확도 계산:
+   절대 불확도 = C2 × 상대 불확도
+               = ${C2.toFixed(6)} × ${relUnc.toFixed(6)}
+               = ${deltaC2.toExponential(3)}
+
+4) 불확도 반올림:
+   반올림된 절대 불확도 = ${roundedDelta.toExponential(3)}
+   (유효숫자 한 자리, 자릿수: ${digits})
+
+5) 값 반올림:
+   반올림된 농도 = ${roundedValue.toFixed(digits)}
+
+[최종 결과]
+희석 후 농도 = ${roundedValue.toFixed(digits)} ± ${roundedDelta.toFixed(digits)} M
+────────────────────────────
+            `;
+
+
+            document.getElementById('calculationProcess').textContent = processText;
         }
-        
-        window.onload = displayResults;
+
+        // 결과 표시 및 계산 과정 출력
+        function displayResults() {
+            const { value, uncertainty } = calculateDilution();
+            document.getElementById('finalConcValue').textContent = value;
+            document.getElementById('finalConcUncertainty').textContent = uncertainty;
+            showCalculationProcess();
+        }
+
+        displayResults();
     </script>
 </body>
 </html>
