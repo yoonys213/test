@@ -120,17 +120,17 @@
     </h1>
 
   <!-- 메인 컨테이너 -->
-  <div class="w-4/5 h-4/5 flex rounded-2xl overflow-hidden shadow-2xl">
+  <div class="w-4/5 h-4/5 flex rounded-2xl overflow-auto shadow-2xl">
     <!-- 왼쪽 영역 - 계산 과정 및 결과 박스 (박스 위에 작은 박스 느낌) -->
     <div class="w-1/2 flex flex-col justify-between p-6">
       <!-- 계산 과정 박스 -->
-      <div class="bg-white rounded-xl p-4 h-[48%] flex flex-col relative shadow-md">
+      <div class="bg-white rounded-xl p-4 h-[70%] flex flex-col relative shadow-md">
         <div class="box-tab">계산 과정</div>
         <div id="calculation-process" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold p-2 pt-6"></div>
       </div>
       
       <!-- 결과 박스 -->
-        <div class="bg-white rounded-xl p-4 h-[48%] flex flex-col relative shadow-md">
+        <div class="bg-white rounded-xl p-4 h-[26%] flex flex-col relative shadow-md">
         <div class="box-tab">결과</div>
         <div id="result" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold text-2xl p-2 pt-6"></div>
         </div>
@@ -159,34 +159,34 @@
       </div>
       
       <!-- 버튼 그리드 -->
-      <div class="bg-[#CEE1F2] rounded-2xl p-6 w-full grid grid-cols-4 gap-4">
+      <div class="bg-[#CEE1F2] rounded-2xl p-6 w-full flex flex-wrap justify-center gap-12">
         <!-- 연산 버튼 -->
-        <button onclick="appendOperation('+')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="appendOperation('+')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           +
         </button>
         
-        <button onclick="appendOperation('×')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="appendOperation('×')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           ×
         </button>
-        <button onclick="appendOperation('÷')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="appendOperation('÷')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           ÷
         </button>
-        <button onclick="clearAll()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="clearAll()" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           C
         </button>
         <!-- 불확도 바로 입력 버튼 -->
-        <button onclick="setUncertainty(0.001)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="setUncertainty(0.001)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           0.001
         </button>
-        <button onclick="setUncertainty(0.01)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="setUncertainty(0.01)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           0.01
         </button>
-        <button onclick="setUncertainty(0.12)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="setUncertainty(0.12)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           0.12
         </button>
         
         
-        <button onclick="calculate()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="calculate()" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           =
         </button>
       </div>
@@ -403,9 +403,8 @@
                     resultValue = roundToEvenStrict(resultValue, minDecimals);
 
                     calculationSteps += `반올림 후 값: ${resultValue}\n`;
-                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toExponential(2)} + ${relUnc2.toExponential(2)} = ${(relUnc1 + relUnc2).toExponential(2)}\n`;
-                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toExponential(2)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
-
+                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}\n`;
+                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
                 } else if (op === '×' || op === '÷') {
                     if (op === '÷' && nextVal === 0) {
                         alert("0으로 나눌 수 없습니다.");
@@ -425,8 +424,8 @@
                     resultValue = roundToSignificantFigures(resultValue, minSigFigs);
 
                     calculationSteps += `값 = ${currentVal} ${op} ${nextVal} = ${resultValue}\n`;
-                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toExponential(2)} + ${relUnc2.toExponential(2)} = ${(relUnc1 + relUnc2).toExponential(2)}\n`;
-                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toExponential(2)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
+                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}\n`;
+                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
                 }
 
                 currentVal = resultValue;
