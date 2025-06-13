@@ -123,6 +123,23 @@
             display: block;
             line-height: 1;
         }
+        select {
+            width: 183.5px;
+            padding: 15px;
+            font-size: 30px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            background-color: #382CA9;
+            color: #ffffff;
+            appearance: none;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: white;
+        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-5px); }
@@ -147,9 +164,9 @@
         <div class="input-group">
             <div class="input-label">저울 불확도</div>
             <div class="value-input-container">
-                <select id="standard_alpha" style="font-size: 36px; padding: 10px;">
-                    <option value="0.001">0.001 g</option>
-                    <option value="0.0001">0.0001 g</option>
+                <select id="standard_alpha">
+                    <option value="0.001">0.001</option>
+                    <option value="0.0001">0.0001</option>
                 </select>
 
                 <span class="unit">g</span>
