@@ -97,7 +97,7 @@
         <!-- 계산 과정 보여줄 박스 -->
         <div id="calculationProcess"></div>
 
-        <button class="back-btn" onclick="window.location.href='dilution_step1.html'">돌아가기</button>
+        <button class="back-btn" onclick="window.location.href='계산기선택창.html'">돌아가기</button>
     </div>
 
     <script>
@@ -107,12 +107,15 @@
         const V1 = parseFloat(localStorage.getItem('V1'));       // 희석 전 용액의 부피
         const beta = parseFloat(localStorage.getItem('beta'));   // 불확도 (V1)
         const V2 = parseFloat(localStorage.getItem('V2'));       // 희석 후 용액의 부피
-        const gamma = parseFloat(localStorage.getItem('gamma')); // 불확도 (V2)
+        const k = parseFloat(localStorage.getItem('k')); //희석횟수(k)
+        const gammaRaw = parseFloat(localStorage.getItem('gamma')); // 불확도 (V2)
+        const gamma = gammaRaw * k;
+        
 
         // 값 없으면 경고 및 이전 페이지로
         if (
             isNaN(C1) || isNaN(alpha) || isNaN(V1) ||
-            isNaN(beta) || isNaN(V2) || isNaN(gamma)
+            isNaN(beta) || isNaN(V2) || isNaN(gamma) ||isNaN(k)
         ) {
             alert("입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.");
             window.location.href = "dilution_step1.html";
@@ -192,7 +195,7 @@
 희석 전 용액 농도 (C1) = ${C1}
 희석 전 용액 부피 (V1) = ${V1}
 희석 후 용액 부피 (V2) = ${V2}
-불확도 (α, β, γ) = (${alpha}, ${beta}, ${gamma})
+불확도 (α, β, γ) = (${alpha}, ${beta}, ${gammaRaw} × ${k} = ${gamma.toFixed(6)})
 
 1) 희석 후 농도 계산:
    C2 = (C1 × V1) / V2
@@ -201,16 +204,16 @@
 
 2) 상대 불확도 계산:
    상대 불확도 = (α / C1) + (β / V1) + (γ / V2)
-               = (${alpha} / ${C1}) + (${beta} / ${V1}) + (${gamma} / ${V2})
+               = (${alpha} / ${C1}) + (${beta} / ${V1}) + (${gamma.toFixed(6)} / ${V2})
                = ${relUnc.toFixed(6)}
 
 3) 절대 불확도 계산:
    절대 불확도 = C2 × 상대 불확도
                = ${C2.toFixed(6)} × ${relUnc.toFixed(6)}
-               = ${deltaC2.toExponential(3)}
+               = ${deltaC2.toFixed(6)}
 
 4) 불확도 반올림:
-   반올림된 절대 불확도 = ${roundedDelta.toExponential(3)}
+   반올림된 절대 불확도 = ${roundedDelta.toFixed(6)}
    (유효숫자 한 자리, 자릿수: ${digits})
 
 5) 값 반올림:
