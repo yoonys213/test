@@ -200,7 +200,7 @@
                 selectedUncertainty = uncertainties[0];
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
                 alert(`${vol}mL 눈금 실린더의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
-                location.href = 'dilution2.html';
+                location.href = 'dilution_step4.html';
             } else {
                 showUncertaintySelection(uncertainties);
             }
@@ -222,7 +222,7 @@
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
                     localStorage.setItem('gamma', selectedUncertainty);
                     alert(`${selectedVolume}mL 눈금 실린더의 불확도 ±${selectedUncertainty} 선택됨`);
-                    location.href = 'dilution2.html';
+                    location.href = 'dilution_step4.html';
                 };
                 container.appendChild(btn);
             });
