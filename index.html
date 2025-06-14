@@ -79,6 +79,26 @@
     <button class="btn btn-importance" onclick="location.href='importance.html'">불확도가 왜 중요할까?</button>
 
     <script>
+        let inputBuffer = '';
+        const secretCode = 'leftleftleftrightrightgo';
+
+        window.addEventListener('keydown', (e) => {
+            console.log('입력된 키:', e.key);
+
+            // 키 이름을 모두 소문자로 입력 버퍼에 추가
+            inputBuffer += e.key.toLowerCase();
+
+            // 입력 버퍼가 너무 길면 앞에서 자르기
+            if (inputBuffer.length > 30) {
+                inputBuffer = inputBuffer.slice(-30);
+            }
+
+            // 시크릿 코드가 입력됐는지 확인
+            if (inputBuffer.includes(secretCode)) {
+                alert('🎉 이스터에그 발견!');
+                window.location.href = 'easter_egg.html';
+            }
+        });
         function openCalculatorSelection() {
             // 현재 창을 닫고 새 창으로 이동
             window.open('calculsel.html', '_self');
