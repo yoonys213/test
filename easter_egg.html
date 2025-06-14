@@ -1,176 +1,213 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>불확도 계산기</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        
-        body {
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: url('로비 백그라운드.png') no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-        
-        /* 배경 위에 직접 배치되는 버튼들 */
-        .btn {
-            padding: 18px 40px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-            width: 280px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        .btn-calculator { background-color: #040077; }
-        .btn-about { background-color: #20209d; }
-        .btn-importance { background-color: #4b75eb; }
-        
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-        }
-        
-        /* 제목 스타일 */
-        .title {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 40px;
-            color: white;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .footer {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            font-size: 20px;
-            color: white;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        }
-        #hint-button {
-            position: absolute;
-            bottom: 15px;
-            left: 15px;
-            width: 350px;
-            height: 40px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            z-index: 10;
-        }
+  <meta charset="UTF-8">
+  <title>🎉 이스터에그 폭발! 🎉</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #47cacc, #fffd7e);
+      background-size: 800% 800%;
+      animation: bgAnimation 10s ease infinite;
+      color: white;
+    }
 
-        #hint-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 999;
-            background-color: rgba(0, 0, 0, 0.85);
-            color: #fff;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            max-width: 90%;
-            text-align: center;
-            font-size: 1.2em;
-            display: none;
-        }
+    @keyframes bgAnimation {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
 
-        #hint-popup.show {
-            display: block;
-        }
+    h1 {
+      text-align: center;
+      font-size: 4em;
+      margin-top: 100px;
+      animation: glow 2s ease-in-out infinite alternate;
+      text-shadow: 0 0 20px #fff, 0 0 40px #f0f;
+    }
 
-        .hidden {
-            display: none;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #f0f;
+      }
+      to {
+        text-shadow: 0 0 30px #ff0, 0 0 60px #0ff;
+      }
+    }
+
+    .emoji {
+      font-size: 3em;
+      position: absolute;
+      animation: float 4s linear infinite, spin 3s linear infinite;
+    }
+
+    @keyframes float {
+      0% {transform: translateY(100vh);}
+      100% {transform: translateY(-10vh);}
+    }
+
+    @keyframes spin {
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(360deg);}
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    audio {
+      display: none;
+    }
+
+    button {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5em;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #fff;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 0 20px #ff0;
+    }
+     .centered-button {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #ff5f6d, #ffc371);
+    color: white;
+    cursor: pointer;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  </style>
 </head>
 <body>
-    <button id="hint-button" title="클릭해보세요"></button>
-    <div id="hint-popup" class="hidden">
-    <div class="hint-box">
-        🤫 힌트: <strong>전기 음성도가 가장 큰 물질의 원자량</strong>을 키보드로 로비 창에 쳐보세요...(소숫점 셋째자리까지)
-        <br><small>(힌트를 닫으려면 X 키를 누르세요)</small>
-    </div>
-</div>
-    <div class="footer">30317 이나경, 30402 김예은, 30520 윤용수</div>
+
+  <div id="particles-js"></div>
+
+  <h1>💥 이스터에그 발동! 💥<br>축하합니다, 전설을 찾으셨습니다!</h1>
+
+  <button onclick="location.href='index.html'">로비로 돌아가기</button>
+  <button class="centered-button" onclick="triggerJoke()">이나경식 개그</button>
 
 
-    
-    <button class="btn btn-calculator" onclick="openCalculatorSelection()">불확도 계산기</button>
-    <button class="btn btn-about" onclick="location.href='불확도란.html'">불확도란?</button>
-    <button class="btn btn-importance" onclick="location.href='불확도중요.html'">불확도가 왜 중요할까?</button>
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/audio/2022/10/05/audio_1d93111f75.mp3" type="audio/mpeg">
+  </audio>
 
-    <script>
-        let inputBuffer = '';
-        const secretCode = '18.998';
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+   
+        function triggerJoke() {
+        // 화면 초기화
+        document.body.innerHTML = '';
+        document.body.style.background = '#000';
+        document.body.style.color = '#0f0';
+        document.body.style.fontSize = '2em';
+        document.body.style.textAlign = 'center';
+        document.body.style.paddingTop = '20vh';
+        document.body.style.overflow = 'hidden';
 
-        window.addEventListener('keydown', (e) => {
-            console.log('입력된 키:', e.key);
+        const jokes = [
+            ["아이언맨이 여자인 이유는?", "Female이기 때문ㅋ (죄송합니다)"],
+            ["도깨비방망이는 ? 무슨 결합이게~", "공유결합ㅋ"],
+            ["종교인들이 가장 좋아하는 귀금속은?", "은. 전도율이 가장 좋으니까ㅋㅋㅋㅋ"]
+        ];
 
-            // 키 이름을 모두 소문자로 입력 버퍼에 추가
-            inputBuffer += e.key.toLowerCase();
-
-            // 입력 버퍼가 너무 길면 앞에서 자르기
-            if (inputBuffer.length > 30) {
-                inputBuffer = inputBuffer.slice(-30);
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes jokePop {
+            0% { transform: scale(0.1); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
             }
+        `;
+        document.head.appendChild(style);
 
-            // 시크릿 코드가 입력됐는지 확인
-            if (inputBuffer.includes(secretCode)) {
-                alert('🎉 이스터에그 발견!');
-                window.location.href = 'easter_egg.html';
-            }
+        jokes.forEach((pair, index) => {
+            const [question, answer] = pair;
+            const questionDelay = index * 7000; // 각 질문은 7초 간격
+
+            // 질문 출력
+            setTimeout(() => {
+            const qDiv = document.createElement('div');
+            qDiv.textContent = question;
+            qDiv.style.animation = 'jokePop 1s ease-in-out';
+            qDiv.style.marginBottom = '10px';
+            document.body.appendChild(qDiv);
+
+            // 3초 뒤에 답변 출력
+            setTimeout(() => {
+                const aDiv = document.createElement('div');
+                aDiv.textContent = answer;
+                aDiv.style.animation = 'jokePop 1s ease-in-out';
+                aDiv.style.marginBottom = '30px';
+                document.body.appendChild(aDiv);
+            }, 3000);
+            }, questionDelay);
         });
-        function openCalculatorSelection() {
-            // 현재 창을 닫고 새 창으로 이동
-            window.open('계산기선택창.html', '_self');
-            window.close(); // 일부 브라우저에서는 보안상의 이유로 작동하지 않을 수 있음
+
+        // 전체 끝나고 22초 뒤에 원래 화면으로 복귀
+        setTimeout(() => location.reload(), 22000);
         }
-
-        // 대안: 현재 창에서 이동 (대부분의 경우 이 방법 사용)
-        function openCalculatorSelection() {
-            window.location.href = '계산기선택창.html';
+    // particles.js 설정
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 100 },
+        "color": { "value": "#ffffff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.7 },
+        "size": { "value": 4 },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "top",
+          "out_mode": "out"
         }
+      }
+    });
 
-        // 배경 이미지 로드 실패시 대체 배경
-        document.body.onerror = function() {
-            document.body.style.background = `
-                linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)
-            `;
-        };
-        // 힌트 팝업 제어
-        const hintButton = document.getElementById('hint-button');
-        const hintPopup = document.getElementById('hint-popup');
+    // 무작위 이모지 생성
+    const emojis = ["🎉", "🚀", "🌈", "💥", "✨", "🔥", "🎊", "🦄", "🎶"];
+    function spawnEmoji() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji';
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * 100 + 'vw';
+      emoji.style.top = '100vh';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 4000);
+    }
 
-        hintButton.addEventListener('click', () => {
-            hintPopup.classList.add('show');
-        });
+    setInterval(spawnEmoji, 200);
+  </script>
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'x') {
-                hintPopup.classList.remove('show');
-            }
-        });
-    </script>
 </body>
 </html>
