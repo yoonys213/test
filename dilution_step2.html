@@ -142,6 +142,16 @@
                 font-size: 16px;
             }
         }
+        .button-wrapper {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .uncertainty-text {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #fff;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
@@ -150,7 +160,7 @@
     <div class="main-content">
         <div class="header">
             <h1 class="title">피펫</h1>
-            <p class="instruction" id="step">채취한 부피를 선택하세요</p>
+            <p class="instruction" id="step">측정 부피를 선택하세요</p>
         </div>
 
         <div class="button-container" id="buttonContainer">
@@ -178,11 +188,27 @@
             container.innerHTML = '';
 
             Object.keys(volumeData[currentTool]).forEach(vol => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'button-wrapper';
+
                 const button = document.createElement('button');
                 button.className = 'tool-btn';
                 button.textContent = `${vol} mL`;
                 button.onclick = () => handleVolumeSelect(Number(vol));
-                container.appendChild(button);
+
+                const uncertaintyList = volumeData[currentTool][vol];
+                const desc = document.createElement('p');
+                desc.className = 'uncertainty-text';
+
+                if (uncertaintyList.length === 1) {
+                    desc.textContent = `±${uncertaintyList[0]}`;
+                } else {
+                    desc.textContent = `불확도 선택`;
+                }
+
+                wrapper.appendChild(button);
+                wrapper.appendChild(desc);
+                container.appendChild(wrapper);
             });
         }
 
@@ -230,6 +256,13 @@
                 };
                 container.appendChild(btn);
             });
+
+            // 뒤로 가기 버튼 추가 (부피 재선택 가능)
+            const backBtn = document.createElement('button');
+            backBtn.className = 'tool-btn';
+            backBtn.textContent = '뒤로';
+            backBtn.onclick = renderButtons;
+            container.appendChild(backBtn);
         }
 
         window.onload = renderButtons;
