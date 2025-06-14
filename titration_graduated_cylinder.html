@@ -143,6 +143,16 @@
                 font-size: 16px;
             }
         }
+        .button-wrapper {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .uncertainty-text {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #fff;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 </head>
@@ -179,11 +189,27 @@
             container.innerHTML = '';
 
             Object.keys(volumeData[currentTool]).forEach(vol => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'button-wrapper';
+
                 const button = document.createElement('button');
                 button.className = 'tool-btn';
                 button.textContent = `${vol} mL`;
                 button.onclick = () => handleVolumeSelect(Number(vol));
-                container.appendChild(button);
+
+                const uncertaintyList = volumeData[currentTool][vol];
+                const desc = document.createElement('p');
+                desc.className = 'uncertainty-text';
+
+                if (uncertaintyList.length === 1) {
+                    desc.textContent = `±${uncertaintyList[0]}`;
+                } else {
+                    desc.textContent = `불확도 선택`;
+                }
+
+                wrapper.appendChild(button);
+                wrapper.appendChild(desc);
+                container.appendChild(wrapper);
             });
         }
 
