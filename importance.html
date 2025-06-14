@@ -2,10 +2,10 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>불확도의 중요성</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>불확도중요</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;900&display=swap');
         
         body {
             background-color: #6276E3;
@@ -13,68 +13,67 @@
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            width: 100vw;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            position: fixed;
-            overflow: hidden;
+            position: relative;
+
         }
         
         .content {
-            padding: 5vh 5vw;
-            width: 100%;
+            padding: 5%;
+            width: 90%;
             max-width: 800px;
             text-align: left;
-            position: relative;
-            z-index: 1;
-            box-sizing: border-box;
         }
         
         h1 {
-            font-size: min(9vh, 11vw); /* 가로 모드에서 크기 증가 */
-            margin: 0 0 2vh 0;
+            font-size: clamp(40px, 10vw, 90px);
+            margin: 0 0 3vh 0;
             font-weight: 900;
             letter-spacing: -1px;
             line-height: 1;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        h2 {
-            font-size: min(3vh, 4vw); /* 가로 모드에서 크기 증가 */
-            margin-bottom: 3vh;
-            opacity: 0.9;
-            font-weight: 400;
-            font-style: italic;
+        .pronunciation {
+            font-size: clamp(16px, 3vw, 26px);
+            margin-bottom: 5vh;
+            opacity: 0.8;
+            font-weight: 300;
         }
         
         p {
-            font-size: min(3vh, 4vw); /* 가로 모드에서 크기 증가 */
-            line-height: 1.5;
-            margin: 2vh 0;
+            font-size: clamp(16px, 3.5vw, 22px);
+            line-height: 1.7;
+            margin: 3vh 0;
             font-weight: 300;
+        }
+        
+        .emphasis {
+            font-weight: 400;
         }
         
         .back-btn {
             position: absolute;
-            left: 5vw;
+            left: 3vw;
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: min(6vh, 8vw);
+            font-size: clamp(40px, 8vw, 60px);
             font-weight: 900;
             cursor: pointer;
             background: transparent;
-            width: min(6vh, 8vw);
-            height: min(6vh, 8vw);
+            width: clamp(50px, 10vw, 80px);
+            height: clamp(50px, 10vw, 80px);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            z-index: 2;
+            z-index: 10;
             border: none;
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
@@ -91,65 +90,13 @@
             line-height: 1;
         }
 
-        /* 가로 모드 전용 스타일 */
-        @media (orientation: landscape) {
-            h1 {
-                font-size: min(10vh, 12vw); /* 가로 모드에서 더 큰 크기 */
-            }
-            
-            h2 {
-                font-size: min(3.5vh, 4.5vw); /* 가로 모드에서 더 큰 크기 */
-            }
-            
-            p {
-                font-size: min(3.5vh, 4.5vw); /* 가로 모드에서 더 큰 크기 */
-                line-height: 1.6;
-            }
-        }
-
-        /* 세로 모드 전용 스타일 */
-        @media (orientation: portrait) {
+        @media (max-width: 768px) {
             .content {
-                padding: 3vh 15vw 3vh 20vw;
+                padding: 8%;
             }
-            
-            h1 {
-                font-size: min(7vh, 9vw);
-                margin-bottom: 1.5vh;
-            }
-            
-            h2 {
-                font-size: min(2.2vh, 3vw);
-                margin-bottom: 2vh;
-            }
-            
-            p {
-                font-size: min(2.2vh, 3vw);
-                line-height: 1.4;
-                margin: 1.8vh 0;
-            }
-            
             .back-btn {
-                left: 3vw;
-                font-size: min(5vh, 7vw);
-                width: min(5vh, 7vw);
-                height: min(5vh, 7vw);
-            }
-        }
-
-        /* 매우 작은 화면 대응 */
-        @media (max-height: 600px) {
-            .content {
-                padding: 2vh 15vw 2vh 20vw;
-            }
-            
-            h1 {
-                font-size: min(6vh, 8vw);
-            }
-            
-            p {
-                line-height: 1.3;
-                margin: 1.5vh 0;
+                left: 2vw;
+                font-size: clamp(30px, 8vw, 50px);
             }
         }
     </style>
@@ -159,13 +106,16 @@
     
     <div class="content">
         <h1>불확도의 중요성</h1>
-        <h2>/Importance of uncertainty/</h2>
+        <div class="pronunciation">/Importance of uncertainty/</div>
         
-        <p>동일한 실험을 수행하더라도 연구자에 따라 결과가 일정 범위 내에서 변할 수 있는데, 불확도를 통해 이러한 변동성을 정량적으로 평가하여 실험 결과의 신뢰도를 판단할 수 있다.</p>
+        <p>동일한 실험을 수행하더라도 연구자에 따라 결과가 일정 범위 내에서 변할 수 있는데,<br>
+        불확도를 통해 이러한 변동성을 정량적으로 평가하여 실험 결과의 신뢰도를 판단할 수 있다.</p>
         
-        <p>또한, 불확도를 활용하여 실험 과정에서 발생하는 오차의 원인을 분석하고 보정하면, 실험 방법을 개선하고 보다 정밀한 결과를 얻을 수 있다.</p>
+        <p>또한, 불확도를 활용하여 실험 과정에서 발생하는 오차의 원인을 분석하고 보정하면,<br>
+        실험 방법을 개선하고 보다 정밀한 결과를 얻을 수 있다.</p>
         
-        <p>따라서, 측정값의 불확도를 고려하지 않으면 실험 결과의 신뢰도를 평가할 수 없으며, 잘못된 결론을 내릴 위험이 커지기에 화학 실험에서 불확도는 매우 중요한 역할을 한다.</p>
+        <p>따라서, 측정값의 불확도를 고려하지 않으면 실험 결과의 신뢰도를 평가할 수 없으며,<br>
+        잘못된 결론을 내릴 위험이 커지기에 화학 실험에서 불확도는 매우 중요한 역할을 한다.</p>
     </div>
 </body>
 </html>
