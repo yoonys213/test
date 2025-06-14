@@ -251,6 +251,11 @@
                 };
                 container.appendChild(btn);
             });
+            const backBtn = document.createElement('button');
+            backBtn.className = 'tool-btn';
+            backBtn.textContent = '뒤로';
+            backBtn.onclick = renderButtons;
+            container.appendChild(backBtn);
         }
     
         window.onload = renderButtons;
