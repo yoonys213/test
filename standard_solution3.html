@@ -86,6 +86,61 @@
             width: 700px; /* 여기서 가로 길이 조절 */
             margin: 20px auto 0 auto;
         }
+      .go-dilution-btn {
+        position: absolute;
+        right: 3vw; /* 오른쪽 정렬 */
+        top: 50%;
+        transform: translateY(-50%);
+        color: white;
+        font-size: clamp(40px, 8vw, 60px);
+        font-weight: 900;
+        cursor: pointer;
+        background: transparent;
+        width: clamp(50px, 10vw, 80px);
+        height: clamp(50px, 10vw, 80px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+        z-index: 10;
+        border: none;
+        outline: none;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      .go-dilution-btn::before {
+        content: "〉"; /* 오른쪽 화살표 */
+        display: block;
+        line-height: 1;
+      }
+
+      .go-dilution-btn:hover {
+        transform: translateY(-50%) scale(1.2);
+        text-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+      }
+
+      .go-dilution-label {
+        position: absolute;
+        right: 3vw;
+        top: calc(50% + clamp(50px, 10vw, 80px) / 2 + 10px); /* 버튼 아래에 표시 */
+        transform: translateY(-50%);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      @media (max-width: 768px) {
+        .go-dilution-btn {
+          right: 2vw;
+        }
+
+        .go-dilution-label {
+          right: 2vw;
+        }
+      }
+
   </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async
@@ -100,7 +155,8 @@
     <div id="debug" class="debug-info"></div>
     <div id="results"></div>
     <div id="calculationProcess" class="calculation-process"></div> 
-    <button class="submit-btn" onclick="goToDilution()">바로 희석으로 가기</button>
+    <button class="go-dilution-btn" onclick="goToDilution()"></button>
+    <div class="go-dilution-label">바로 희석으로 가기</div>
     <button class="back-btn" onclick="window.location.href='calculsel.html'">돌아가기</button>
   </div>
 
