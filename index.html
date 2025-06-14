@@ -19,7 +19,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: url('assets/bg-main.jpg') no-repeat center center;
+            background: url('로비 백그라운드.png') no-repeat center center;
             background-size: cover;
             position: relative;
         }
@@ -65,11 +65,53 @@
             color: white;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
+        #hint-button {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            width: 350px;
+            height: 40px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
 
+        #hint-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            max-width: 90%;
+            text-align: center;
+            font-size: 1.2em;
+            display: none;
+        }
+
+        #hint-popup.show {
+            display: block;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <button id="hint-button" title="클릭해보세요"></button>
+    <div id="hint-popup" class="hidden">
+    <div class="hint-box">
+        🤫 힌트: <strong>전기 음성도가 가장 큰 물질의 원자량</strong>을 키보드로 로비 창에 쳐보세요...(소숫점 셋째자리까지)
+        <br><small>(힌트를 닫으려면 X 키를 누르세요)</small>
+    </div>
+</div>
     <div class="footer">30317 이나경, 30402 김예은, 30520 윤용수</div>
 
 
@@ -80,7 +122,7 @@
 
     <script>
         let inputBuffer = '';
-        const secretCode = 'leftleftleftrightrightgo';
+        const secretCode = '18.998';
 
         window.addEventListener('keydown', (e) => {
             console.log('입력된 키:', e.key);
@@ -116,6 +158,19 @@
                 linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)
             `;
         };
+        // 힌트 팝업 제어
+        const hintButton = document.getElementById('hint-button');
+        const hintPopup = document.getElementById('hint-popup');
+
+        hintButton.addEventListener('click', () => {
+            hintPopup.classList.add('show');
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'x') {
+                hintPopup.classList.remove('show');
+            }
+        });
     </script>
 </body>
 </html>
