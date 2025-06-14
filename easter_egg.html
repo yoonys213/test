@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>🎉 이스터에그 폭발! 🎉</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #47cacc, #fffd7e);
+      background-size: 800% 800%;
+      animation: bgAnimation 10s ease infinite;
+      color: white;
+    }
+
+    @keyframes bgAnimation {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 4em;
+      margin-top: 100px;
+      animation: glow 2s ease-in-out infinite alternate;
+      text-shadow: 0 0 20px #fff, 0 0 40px #f0f;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #fff, 0 0 20px #f0f;
+      }
+      to {
+        text-shadow: 0 0 30px #ff0, 0 0 60px #0ff;
+      }
+    }
+
+    .emoji {
+      font-size: 3em;
+      position: absolute;
+      animation: float 4s linear infinite, spin 3s linear infinite;
+    }
+
+    @keyframes float {
+      0% {transform: translateY(100vh);}
+      100% {transform: translateY(-10vh);}
+    }
+
+    @keyframes spin {
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(360deg);}
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    audio {
+      display: none;
+    }
+
+    button {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5em;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #fff;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 0 20px #ff0;
+    }
+     .centered-button {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    padding: 20px 40px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #ff5f6d, #ffc371);
+    color: white;
+    cursor: pointer;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  </style>
+</head>
+<body>
+
+  <div id="particles-js"></div>
+
+  <h1>💥 이스터에그 발동! 💥<br>축하합니다, 전설을 찾으셨습니다!</h1>
+
+  <button onclick="location.href='index.html'">로비로 돌아가기</button>
+  <button class="centered-button" onclick="triggerJoke()">이나경식 게그</button>
+
+
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/audio/2022/10/05/audio_1d93111f75.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    function triggerJoke() {
+    // 화면 초기화
+    document.body.innerHTML = '';
+    document.body.style.background = '#000';
+    document.body.style.color = '#0f0';
+    document.body.style.fontSize = '2em';
+    document.body.style.textAlign = 'center';
+    document.body.style.paddingTop = '20vh';
+    document.body.style.overflow = 'hidden';
+
+    // 농담 텍스트 (먼저 표시)
+    const joke = document.createElement('div');
+    joke.textContent = "아이언맨이 여자인 이유는? Female이기 때문ㅋ (죄송합니다)";
+    joke.style.color = '#ff0';
+    joke.style.fontSize = '2em';
+    joke.style.textShadow = '0 0 10px #fff';
+    joke.style.animation = 'jokePop 2s ease-in-out';
+    joke.style.zIndex = '10';
+    document.body.appendChild(joke);
+
+    // 스타일 애니메이션 정의
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes jokePop {
+        0% { transform: scale(0.1); opacity: 0; }
+        50% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // 4초 뒤에 헤헤헿헤헤 도배
+    setTimeout(() => {
+      const repeatText = "헤헤헿헤헤 ".repeat(300);
+      const spam = document.createElement('div');
+      spam.textContent = repeatText;
+      spam.style.position = 'absolute';
+      spam.style.top = '20vh';
+      spam.style.left = '0';
+      spam.style.width = '100%';
+      spam.style.height = '80vh';
+      spam.style.overflow = 'auto';
+      spam.style.zIndex = '1';
+      spam.style.color = '#0f0';
+      document.body.appendChild(spam);
+    }, 4000);
+
+    // 7초 후 원래 화면으로 복귀
+    setTimeout(() => location.reload(), 7000);
+  }
+    // particles.js 설정
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 100 },
+        "color": { "value": "#ffffff" },
+        "shape": { "type": "circle" },
+        "opacity": { "value": 0.7 },
+        "size": { "value": 4 },
+        "move": {
+          "enable": true,
+          "speed": 3,
+          "direction": "top",
+          "out_mode": "out"
+        }
+      }
+    });
+
+    // 무작위 이모지 생성
+    const emojis = ["🎉", "🚀", "🌈", "💥", "✨", "🔥", "🎊", "🦄", "🎶"];
+    function spawnEmoji() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji';
+      emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = Math.random() * 100 + 'vw';
+      emoji.style.top = '100vh';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 4000);
+    }
+
+    setInterval(spawnEmoji, 200);
+  </script>
+
+</body>
+</html>
