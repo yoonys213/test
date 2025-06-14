@@ -61,7 +61,25 @@
         .back-btn:hover {
             background-color: #f0f0f0;
         }
+                    
+        /* 블록 수식(\\[ ... \\]) 줄간격 조정 */
+        .mjx-container {
+            line-height: 0 !important;  /* 기본값은 1.6~1.8 */
+            margin-top: 0.2em !important;
+            margin-bottom: 0.2em !important;
+        }
+
+        /* p 태그 줄간격도 줄이고 싶다면 같이 조정 */
+        #calculationProcess p {
+            margin-top: 0.1em;
+            margin-bottom: 0.01em;
+        }
+
     </style>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
 </head>
 <body>
     <div class="container">
@@ -92,7 +110,7 @@
             "
         ></div>
 
-        <button class="back-btn" onclick="window.location.href='titration_step1.html'">돌아가기</button>
+        <button class="back-btn" onclick="window.location.href='calculsel.html'">돌아가기</button>
     </div>
 
     <script>
@@ -184,35 +202,53 @@
 
         // 계산 과정 표시 함수
         function displayCalculationProcess({ numerator, denominator, relUnc, H, deltaH }) {
-            const container = document.getElementById('calculationProcess');
-            container.innerHTML = `
-계산 과정
-────────────────────────────
-1. 입력 값
-- 표준 용액의 농도 (M) : ${M}
-- 표준 용액의 부피 (V₁) : ${V1}
-- 미지 용액의 부피 (V₂) : ${V2}
-- 표준 용액의 가수 (n₁) : ${n1}
-- 미지 용액의 가수 (n₂) : ${n2}
+    const container = document.getElementById('calculationProcess');
+    container.innerHTML = `
+        <h3>계산 과정</h3>
 
-2. 미지 용액 농도 계산
-[H] = (M × V₁ × n₂) / (V₂ × n₁)
-    = (${M} × ${V1} × ${n2}) / (${V2} × ${n1})
-    = ${numerator.toFixed(4)} / ${denominator.toFixed(4)}
-    = ${H.toFixed(6)}
+        <p><strong>1. 입력 값</strong></p>
+        <ul>
+            <li>표준 용액의 농도 (M): ${M}</li>
+            <li>표준 용액의 부피 (V₁): ${V1}</li>
+            <li>미지 용액의 부피 (V₂): ${V2}</li>
+            <li>표준 용액의 가수 (n₁): ${n1}</li>
+            <li>미지 용액의 가수 (n₂): ${n2}</li>
+        </ul>
 
-3. 상대 불확도 계산
-(α / M) + (β / V₁) + (θ / V₂)
-= (${alpha} / ${M}) + (${beta} / ${V1}) + (${theta} / ${V2})
-= ${relUnc.toFixed(6)}
+        <p><strong>2. 미지 용액 농도 계산</strong></p>
+        <p>
+            \\[
+            [H] = \\frac{M \\cdot V_1 \\cdot n_2}{V_2 \\cdot n_1}
+                 = \\frac{${M} \\cdot ${V1} \\cdot ${n2}}{${V2} \\cdot ${n1}}
+                 = \\frac{${numerator.toFixed(4)}}{${denominator.toFixed(4)}}
+                 = ${H.toFixed(6)}
+            \\]
+        </p>
 
-4. 절대 불확도 계산
-ΔH = [H] × 상대 불확도
-    = ${H.toFixed(6)} × ${relUnc.toFixed(6)}
-    = ${deltaH.toFixed(6)}
-────────────────────────────
-            `;
-        }
+        <p><strong>3. 상대 불확도 계산</strong></p>
+        <p>
+            \\[
+            \\text{상대 불확도} = \\frac{\\alpha}{M} + \\frac{\\beta}{V_1} + \\frac{\\theta}{V_2}
+                               = \\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${theta}}{${V2}}
+                               = ${relUnc.toFixed(6)}
+            \\]
+        </p>
+
+        <p><strong>4. 절대 불확도 계산</strong></p>
+        <p>
+            \\[
+            \\Delta H = [H] \\times \\text{상대 불확도}
+                     = ${H.toFixed(6)} \\times ${relUnc.toFixed(6)}
+                     = \\boxed{${deltaH.toFixed(6)}}
+            \\]
+        </p>
+    `;
+
+    // MathJax 수식 다시 렌더링
+    if (window.MathJax) {
+        MathJax.typeset();
+    }
+}
 
         // 결과 표시
         function displayResults() {
