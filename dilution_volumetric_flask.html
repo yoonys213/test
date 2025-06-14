@@ -14,7 +14,6 @@
 
         body {
             height: 100vh;
-            margin: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -54,7 +53,6 @@
             color: white;
             font-weight: 500;
             text-align: left;
-            margin-left: 0px;
         }
 
         .button-container {
@@ -144,6 +142,7 @@
                 font-size: 16px;
             }
         }
+
         .button-wrapper {
             margin-bottom: 15px;
             text-align: center;
@@ -187,18 +186,27 @@
         let selectedUncertainty = 0;
         const currentTool = "부피 플라스크";
 
+        function safeSetItem(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                console.error(`localStorage 저장 실패: ${key} = ${value}`, e);
+            }
+        }
+
         function renderButtons() {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
 
-            Object.keys(volumeData[currentTool]).forEach(vol => {
+            Object.keys(volumeData[currentTool]).forEach(volStr => {
+                const vol = Number(volStr);
                 const wrapper = document.createElement('div');
                 wrapper.className = 'button-wrapper';
 
                 const button = document.createElement('button');
                 button.className = 'tool-btn';
                 button.textContent = `${vol} mL`;
-                button.onclick = () => handleVolumeSelect(Number(vol));
+                button.onclick = () => handleVolumeSelect(vol);
 
                 const uncertaintyList = volumeData[currentTool][vol];
                 const desc = document.createElement('p');
@@ -220,15 +228,15 @@
             selectedVolume = vol;
             const uncertainties = volumeData[currentTool][vol];
 
-            localStorage.setItem('selectedTool', currentTool);
-            localStorage.setItem('selectedVolume', vol);
-            localStorage.setItem('standardSolutionVolume', vol);
-            localStorage.setItem('V2', vol);
+            safeSetItem('selectedTool', currentTool);
+            safeSetItem('selectedVolume', vol);
+            safeSetItem('standardSolutionVolume', vol);
+            safeSetItem('V2', vol);
 
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0];
-                localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                localStorage.setItem('gamma', selectedUncertainty);
+                safeSetItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
+                safeSetItem('gamma', selectedUncertainty);
                 alert(`${vol}mL 부피 플라스크의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
                 location.href = 'dilution_step4.html';
             } else {
@@ -247,14 +255,14 @@
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
                     selectedUncertainty = unc;
-                    localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    localStorage.setItem('gamma', selectedUncertainty);
+                    safeSetItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
+                    safeSetItem('gamma', selectedUncertainty);
                     alert(`${selectedVolume}mL 부피 플라스크의 불확도 ±${selectedUncertainty} 선택됨`);
                     location.href = 'dilution_step4.html';
                 };
                 container.appendChild(btn);
             });
-            // 뒤로 가기 버튼 추가 (부피 재선택 가능)
+
             const backBtn = document.createElement('button');
             backBtn.className = 'tool-btn';
             backBtn.textContent = '뒤로';
