@@ -83,6 +83,14 @@
             margin: 20px auto 0 auto;
         }
     </style>
+        <script>
+    window.MathJax = {
+        tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
+        svg: { fontCache: 'global' }
+    };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
 </head>
 <body>
     <div class="container">
@@ -113,11 +121,18 @@
         
 
         // 값 없으면 경고 및 이전 페이지로
-        if (
-            isNaN(C1) || isNaN(alpha) || isNaN(V1) ||
-            isNaN(beta) || isNaN(V2) || isNaN(gamma) ||isNaN(k)
-        ) {
-            alert("입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.");
+        const missingValues = [];
+
+        if (isNaN(C1)) missingValues.push("C1 (원액 농도)");
+        if (isNaN(alpha)) missingValues.push("α (C1의 불확도)");
+        if (isNaN(V1)) missingValues.push("V1 (원액 부피)");
+        if (isNaN(beta)) missingValues.push("β (V1의 불확도)");
+        if (isNaN(V2)) missingValues.push("V2 (최종 부피)");
+        if (isNaN(gamma)) missingValues.push("γ (V2의 불확도)");
+        if (isNaN(k)) missingValues.push("k (희석 계수)");
+
+        if (missingValues.length > 0) {
+            alert("다음 항목이 비어 있거나 잘못되었습니다:\n\n" + missingValues.join("\n"));
             window.location.href = "dilution_step1.html";
         }
 
@@ -176,56 +191,56 @@
             const relUnc = (alpha / C1) + (beta / V1) + (gamma / V2);
             const deltaC2 = C2 * relUnc;
 
-            // 불확도 반올림 과정
             const roundedDelta = roundUncertainty(deltaC2);
-
-            // 불확도 자리수 계산
             const uncertExponent = Math.floor(Math.log10(Math.abs(roundedDelta)));
             const digits = Math.max(0, -uncertExponent);
-
-            // 값 반올림
             const roundedValue = roundHalfToEven(C2, digits);
 
-            // 계산 과정 문자열 생성
-            const processText =
-`
-계산 과정
-────────────────────────────
-[입력값]
-희석 전 용액 농도 (C1) = ${C1}
-희석 전 용액 부피 (V1) = ${V1}
-희석 후 용액 부피 (V2) = ${V2}
-불확도 (α, β, γ) = (${alpha}, ${beta}, ${gammaRaw} × ${k} = ${gamma.toFixed(6)})
+            const processText = `
+<p><strong>1. 입력값</strong></p>
+<ul>
+    <li>희석 전 용액의 농도 (C₁): ${C1}</li>
+    <li>희석 전 용액의 부피 (V₁): ${V1}</li>
+    <li>희석 후 전체 용액의 부피 (V₂): ${V2}</li>
+    <li>C₁의 불확도 (α): ${alpha}</li>
+    <li>V₁의 불확도 (β): ${beta}</li>
+    <li>희석 횟수 (k): ${k}</li>
+    <li>V₂의 불확도 (γ): ${gammaRaw} × ${k} = ${gamma.toFixed(6)}</li>
+</ul>
 
-1) 희석 후 농도 계산:
-   C2 = (C1 × V1) / V2
-      = (${C1} × ${V1}) / ${V2}
-      = ${C2.toFixed(6)}
+<p><strong>2. 희석 후 농도 계산</strong><br>
+\\[
+C_2 = \\frac{C_1 \\times V_1}{V_2} = \\frac{${C1} \\times ${V1}}{${V2}} = ${C2.toFixed(6)}
+\\]
+</p>
 
-2) 상대 불확도 계산:
-   상대 불확도 = (α / C1) + (β / V1) + (γ / V2)
-               = (${alpha} / ${C1}) + (${beta} / ${V1}) + (${gamma.toFixed(6)} / ${V2})
-               = ${relUnc.toFixed(6)}
+<p><strong>3. 상대 불확도 계산</strong><br>
+\\[
+\\text{상대 불확도} = \\frac{\\alpha}{C_1} + \\frac{\\beta}{V_1} + \\frac{\\gamma}{V_2} 
+= \\frac{${alpha}}{${C1}} + \\frac{${beta}}{${V1}} + \\frac{${gamma.toFixed(6)}}{${V2}} = ${relUnc.toFixed(6)}
+\\]
+</p>
 
-3) 절대 불확도 계산:
-   절대 불확도 = C2 × 상대 불확도
-               = ${C2.toFixed(6)} × ${relUnc.toFixed(6)}
-               = ${deltaC2.toFixed(6)}
+<p><strong>4. 절대 불확도 계산</strong><br>
+\\[
+\\Delta C_2 = C_2 \\times \\text{상대 불확도} = ${C2.toFixed(6)} \\times ${relUnc.toFixed(6)} = ${deltaC2.toFixed(6)}
+\\]
+</p>
 
-4) 불확도 반올림:
-   반올림된 절대 불확도 = ${roundedDelta.toFixed(6)}
-   (유효숫자 한 자리, 자릿수: ${digits})
+<p><strong>5. 불확도 반올림</strong><br>
+반올림된 절대 불확도 = ${roundedDelta.toFixed(6)}<br>
+(자릿수 = ${digits}, 유효숫자 1자리)
+</p>
 
-5) 값 반올림:
-   반올림된 농도 = ${roundedValue.toFixed(digits)}
+<p><strong>6. 농도 값 반올림</strong><br>
+\\[
+C_2 = ${roundedValue.toFixed(digits)} \\pm ${roundedDelta.toFixed(digits)} \\text{ M}
+\\]
+</p>
+`;
 
-[최종 결과]
-희석 후 농도 = ${roundedValue.toFixed(digits)} ± ${roundedDelta.toFixed(digits)} M
-────────────────────────────
-            `;
-
-
-            document.getElementById('calculationProcess').textContent = processText;
+    document.getElementById('calculationProcess').innerHTML = processText;
+    MathJax.typeset(); // MathJax 수식 렌더링 호출
         }
 
         // 결과 표시 및 계산 과정 출력
