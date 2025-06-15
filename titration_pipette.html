@@ -227,7 +227,7 @@
                 selectedUncertainty = uncertainties[0]*2;
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
                 localStorage.setItem('titration_theta', selectedUncertainty);
-                alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${uncertainties[0]} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
                 location.href = 'titration_step4.html';
             } else {
                 showUncertaintySelection(uncertainties);
@@ -248,7 +248,7 @@
                     
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
                     localStorage.setItem('titration_theta', selectedUncertainty);
-                    alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${uncertainties[0]} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                    alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
                     location.href = 'titration_step4.html';
                 
                 };
