@@ -123,19 +123,28 @@
         const theta = parseFloat(localStorage.getItem('titration_theta'));
         const n1 = parseInt(localStorage.getItem('titration_n1'));
         const n2 = parseInt(localStorage.getItem('titration_n2'));
+        const t_n = parseInt(localStorage.getItem('t_n')); // 채취 횟수
+        const effectiveTheta = theta * t_n;
 
-        // 값이 없을 경우 오류 처리
-        if (
-            isNaN(M) ||
-            isNaN(alpha) ||
-            isNaN(V1) ||
-            isNaN(beta) ||
-            isNaN(V2) ||
-            isNaN(theta) ||
-            isNaN(n1) ||
-            isNaN(n2)
-        ) {
-            alert('입력값이 없습니다. 이전 페이지에서 값을 입력해주세요.');
+        // 누락된 항목 감지 및 경고 표시
+        const missingFields = [];
+
+        if (isNaN(M)) missingFields.push('표준 용액의 농도 (M)');
+        if (isNaN(alpha)) missingFields.push('표준 용액 농도의 불확도 (α)');
+        if (isNaN(V1)) missingFields.push('표준 용액의 부피 (V₁)');
+        if (isNaN(beta)) missingFields.push('표준 용액 부피의 불확도 (β)');
+        if (isNaN(V2)) missingFields.push('미지 용액의 부피 (V₂)');
+        if (isNaN(theta)) missingFields.push('미지 용액 부피의 불확도 (θ)');
+        if (isNaN(t_n)) missingFields.push('채취 횟수 (t_n)');
+        if (isNaN(n1)) missingFields.push('표준 용액의 가수 (n₁)');
+        if (isNaN(n2)) missingFields.push('미지 용액의 가수 (n₂)');
+
+        if (missingFields.length > 0) {
+            alert(
+                '다음 입력값이 누락되었습니다:\n\n' +
+                missingFields.join('\n') +
+                '\n\n이전 페이지에서 값을 입력해주세요.'
+            );
             window.location.href = 'titration_step1.html';
         }
 
@@ -145,6 +154,8 @@
             const x = val * factor;
             const i = Math.floor(x);
             const f = x - i;
+            const effectiveTheta = theta * t_n; // 불확도에 채취 횟수 반영
+            const relUnc = alpha / M + beta / V1 + effectiveTheta / V2;
 
             if (Math.abs(f - 0.5) < 1e-12) {
                 return (i % 2 === 0 ? i : i + 1) / factor;
@@ -188,7 +199,7 @@
             const denominator = V2 * n1;
             const H = numerator / denominator;
 
-            const relUnc = alpha / M + beta / V1 + theta / V2;
+            const relUnc = alpha / M + beta / V1 + effectiveTheta / V2;
 
             const deltaH = H * relUnc;
 
@@ -203,6 +214,8 @@
         // 계산 과정 표시 함수
         function displayCalculationProcess({ numerator, denominator, relUnc, H, deltaH }) {
     const container = document.getElementById('calculationProcess');
+    const effectiveTheta = theta * t_n;
+
     container.innerHTML = `
         <h3>계산 과정</h3>
 
@@ -213,6 +226,7 @@
             <li>미지 용액의 부피 (V₂): ${V2}</li>
             <li>표준 용액의 가수 (n₁): ${n1}</li>
             <li>미지 용액의 가수 (n₂): ${n2}</li>
+            <li>채취 횟수 (t_n): ${t_n}</li>
         </ul>
 
         <p><strong>2. 미지 용액 농도 계산</strong></p>
@@ -228,8 +242,8 @@
         <p><strong>3. 상대 불확도 계산</strong></p>
         <p>
             \\[
-            \\text{상대 불확도} = \\frac{\\alpha}{M} + \\frac{\\beta}{V_1} + \\frac{\\theta}{V_2}
-                               = \\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${theta}}{${V2}}
+            \\text{상대 불확도} = \\frac{\\alpha}{M} + \\frac{\\beta}{V_1} + \\frac{\\theta \\times t_n}{V_2}
+                               = \\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${theta} \\times ${t_n}}{${V2}}
                                = ${relUnc.toFixed(6)}
             \\]
         </p>
@@ -244,7 +258,6 @@
         </p>
     `;
 
-    // MathJax 수식 다시 렌더링
     if (window.MathJax) {
         MathJax.typeset();
     }
