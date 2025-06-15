@@ -232,7 +232,7 @@
         <p><strong>2. 미지 용액 농도 계산</strong></p>
         <p>
             \\[
-            [H] = \\frac{M \\cdot V_1 \\cdot n_2}{V_2 \\cdot n_1}
+            [M] = \\frac{M \\cdot V_1 \\cdot n_2}{V_2 \\cdot n_1}
                  = \\frac{${M} \\cdot ${V1} \\cdot ${n2}}{${V2} \\cdot ${n1}}
                  = \\frac{${numerator.toFixed(4)}}{${denominator.toFixed(4)}}
                  = ${H.toFixed(6)}
@@ -251,7 +251,7 @@
         <p><strong>4. 절대 불확도 계산</strong></p>
         <p>
             \\[
-            \\Delta H = [H] \\times \\text{상대 불확도}
+            \\Delta M = [M] \\times \\text{상대 불확도}
                      = ${H.toFixed(6)} \\times ${relUnc.toFixed(6)}
                      = \\boxed{${deltaH.toFixed(6)}}
             \\]
