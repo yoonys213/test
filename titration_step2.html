@@ -219,14 +219,14 @@
 
             const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
-                selectedUncertainty = uncertainties[0];
-                localStorage.setItem('titration_V1', vol);
+                selectedUncertainty = uncertainties[0]*2;
+                
                 localStorage.setItem('titration_beta', selectedUncertainty);
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`${vol}mL 뷰렛의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
-                location.href = 'titration_step3.html';
+                alert(`뷰렛은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                location.href = 'titration_step2.5.html';
             } else {
-                localStorage.setItem('titration_V1', vol);
+                
                 showUncertaintySelection(uncertainties);
             }
         }
@@ -241,11 +241,11 @@
                 btn.className = 'tool-btn';
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
-                    selectedUncertainty = unc;
+                    selectedUncertainty = unc*2;
                     localStorage.setItem('titration_beta', selectedUncertainty);
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    alert(`선택 완료: ${selectedVolume}mL 뷰렛의 불확도 ±${selectedUncertainty}`);
-                    location.href = 'titration_step3.html';
+                    alert(`뷰렛은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                    location.href = 'titration_step2.5.html';
                 };
                 container.appendChild(btn);
             });
