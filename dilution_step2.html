@@ -170,15 +170,19 @@
 
     <script>
         const volumeData = {
-            "뷰렛": {
-                50: [0.05, 0.1]  // 50mL 뷰렛의 불확도 옵션
+            "피펫": {
+                1: [0.01],
+                5: [0.05],
+                10: [0.03, 0.05],
+                20: [0.05, 0.06, 0.1],
+                25: [0.1]
             }
         };
 
         let selectedVolume = 0;
         let selectedUncertainty = 0;
-        const currentTool = "뷰렛";  // ★ volumeData 키와 일치
-    
+        const currentTool = "피펫";
+
         function renderButtons() {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
@@ -207,56 +211,61 @@
                 container.appendChild(wrapper);
             });
         }
-    
+
         function handleVolumeSelect(vol) {
             selectedVolume = vol;
-            localStorage.setItem('selectedTool', currentTool);
-            localStorage.setItem('selectedVolume', vol);
-            localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
-
             const uncertainties = volumeData[currentTool][vol];
+
             if (uncertainties.length === 1) {
                 selectedUncertainty = uncertainties[0]*2;
+
+                localStorage.setItem('selectedTool', currentTool);
+                localStorage.setItem('selectedVolume', vol);
+                localStorage.setItem('standardSolutionVolume', vol);
                 
-                localStorage.setItem('titration_beta', selectedUncertainty);
+                localStorage.setItem('beta', selectedUncertainty);
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
-                alert(`뷰렛은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
-                location.href = 'titration_step2.5.html';
+
+                alert(`피펫은 눈금 측정을 두번하기 때문에\n불확도 ±${uncertainties[0]} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                location.href = 'dilution_step3.html';
             } else {
+                localStorage.setItem('selectedTool', currentTool);
+                localStorage.setItem('selectedVolume', vol);
+                localStorage.setItem('standardSolutionVolume', vol);
                 
                 showUncertaintySelection(uncertainties);
             }
         }
-    
+
         function showUncertaintySelection(options) {
             const container = document.getElementById('buttonContainer');
             container.innerHTML = '';
             document.getElementById('step').textContent = '불확도를 선택하세요';
-    
+
             options.forEach(unc => {
                 const btn = document.createElement('button');
                 btn.className = 'tool-btn';
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
                     selectedUncertainty = unc*2;
-                    localStorage.setItem('titration_beta', selectedUncertainty);
+                    localStorage.setItem('beta', selectedUncertainty);
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
-                    alert(`뷰렛은 눈금 측정을 두 번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
-                    location.href = 'titration_step2.5.html';
+
+                    alert(`피펫은 눈금 측정을 두번하기 때문에\n불확도 ±${unc} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
+                    location.href = 'dilution_step3.html';
                 };
                 container.appendChild(btn);
             });
+
+            // 뒤로 가기 버튼 추가 (부피 재선택 가능)
             const backBtn = document.createElement('button');
             backBtn.className = 'tool-btn';
             backBtn.textContent = '뒤로';
             backBtn.onclick = renderButtons;
             container.appendChild(backBtn);
-
-            
         }
-    
+
         window.onload = renderButtons;
-        
     </script>
 </body>
 </html>
