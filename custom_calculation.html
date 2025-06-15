@@ -97,12 +97,12 @@
     line-height: 1;
     }
     .back-btn:hover {
-            transform: translateY(-50%) scale(1.2);
-            text-shadow: 0 0 15px rgba(0,0,0,0.8);
-        }
+        transform: translateY(-50%) scale(1.2);
+        text-shadow: 0 0 15px rgba(0,0,0,0.8);
+      }
     @media (max-width: 768px) {
     .back-btn {
-        left: 2vw;
+      left: 2vw;
     }
     }
   </style>
@@ -110,12 +110,12 @@
 <body class="bg-[#729DF2] flex items-center justify-center h-screen">
   <!-- 뒤로 가기 버튼 (중앙 정렬) -->
   <button onclick="try{location.href='calculsel.html';}catch(e){alert('이전 페이지로 이동할 수 없습니다.');}" 
-        class="back-btn"></button>
+      class="back-btn"></button>
 
-          
+      
   </button>
 
-        <h1 class="absolute top-[0.5rem] left-40 text-white text-6xl font-bold title-font tracking-wide">
+      <h1 class="absolute top-[0.5rem] left-40 text-white text-6xl font-bold title-font tracking-wide">
     불확도 계산기
     </h1>
 
@@ -126,7 +126,7 @@
       <!-- 계산 과정 박스 -->
       <div class="bg-white rounded-xl p-4 h-[70%] flex flex-col relative shadow-md">
         <div class="box-tab">계산 과정</div>
-        <div id="calculation-process" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold p-2 pt-6"></div>
+        <div id="calculation-process" class="flex-grow overflow-y-auto text-[#030BA6] font-semibold p-2 pt-6 whitespace-pre-wrap"></div>
       </div>
       
       <!-- 결과 박스 -->
@@ -148,45 +148,45 @@
         <div class="flex items-center text-[#030BA6]">
           <span class="parentheses">(</span>
           <input type="text" id="value" placeholder="값" oninput="validateNumber(this)" 
-                 class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
+               class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
           <span class="parentheses">)</span>
           <span class="mx-2 text-2xl font-bold">±</span>
           <span class="parentheses">(</span>
           <input type="text" id="uncertainty" placeholder="불확도" oninput="validateNumber(this)" 
-                 class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
+               class="w-24 text-center text-2xl font-semibold border-b-2 border-[#030BA6] focus:outline-none">
           <span class="parentheses">)</span>
         </div>
       </div>
       
       <!-- 버튼 그리드 -->
-      <div class="bg-[#CEE1F2] rounded-2xl p-6 w-full flex flex-wrap justify-center gap-12">
+      <div class="bg-[#CEE1F2] rounded-2xl p-6 w-full flex flex-wrap justify-center gap-4 md:gap-8 lg:gap-12">
         <!-- 연산 버튼 -->
-        <button onclick="appendOperation('+')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="appendOperation('+')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           +
         </button>
-        
-        <button onclick="appendOperation('×')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <!-- 빼기 버튼 추가 -->
+        <button onclick="appendOperation('−')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          −
+        </button>
+        <button onclick="appendOperation('×')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           ×
         </button>
-        <button onclick="appendOperation('÷')" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="appendOperation('÷')" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           ÷
         </button>
-        <button onclick="clearAll()" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+         <!-- 지우기 버튼 추가 -->
+        <button onclick="backspace()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+          ⌫
+        </button>
+        <button onclick="clearAll()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           C
         </button>
         <!-- 불확도 바로 입력 버튼 -->
-        <button onclick="setUncertainty(0.001)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="setUncertainty(0.001)" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
           0.001
         </button>
-        <button onclick="setUncertainty(0.01)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
-          0.01
-        </button>
-        <button onclick="setUncertainty(0.12)" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-xl font-semibold hover:bg-[#1a5bd9] transition">
-          0.12
-        </button>
         
-        
-        <button onclick="calculate()" class="bg-[#2E6FF2] text-white rounded-full w-20 h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
+        <button onclick="calculate()" class="bg-[#2E6FF2] text-white rounded-full w-16 h-16 md:w-20 md:h-20 flex items-center justify-center text-2xl font-semibold hover:bg-[#1a5bd9] transition">
           =
         </button>
       </div>
@@ -204,12 +204,12 @@
         <ul class="list-disc pl-5 space-y-2 text-[#030BA6]">
         <li>1. 키보드로 숫자를 입력하여 '값'과 '불확도' 칸을 채웁니다.</li>
         <li>2. 측정값 → 불확도 순으로 수를 입력하세요.</li>
-        <li>3. 화면의 0.001, 0.01 버튼을 누르면 '불확도' 칸에 해당 값이 자동적으로 입력됩니다.</li>
-        <li>4. 괄호 안 숫자를 다 채운 후, 원하는 사칙연산 기호 버튼을 누르면 입력한 (측정값 ± 불확도)가 계산 과정에 추가됩니다.</li>
-        <li>5. 계속해서 숫자와 연산 기호를 넣어 식을 구성합니다.</li>
-        <li>6. 식의 마지막에 등호(=) 버튼을 누르거나, 입력 칸에서 Enter 키를 누르면 계산 결과가 Result 박스에 나타납니다.</li>
-        <li>7. 식을 다시 입력하고 싶을 시엔 C 버튼을 눌러 초기화합니다.</li>
-        <li>8. 이전 계산 결과가 있는 상태에서 바로 연산자 버튼을 누르면, 이전 결과를 첫 번째 값으로 사용하여 계산을 이어갈 수 있습니다.</li>
+        <li>3. 화면의 0.001, 0.01, 0.12 버튼으로 '불확도'를 빠르게 입력할 수 있습니다.</li>
+        <li>4. 원하는 사칙연산 기호 버튼을 누르면 계산 과정에 추가됩니다.</li>
+        <li>5. ⌫ (지우기) 버튼으로 마지막에 입력한 연산자나 숫자 그룹을 삭제할 수 있습니다.</li>
+        <li>6. 식의 마지막에 등호(=) 버튼을 누르면 계산 결과가 Result 박스에 나타납니다.</li>
+        <li>7. C 버튼을 눌러 식 전체를 초기화합니다.</li>
+        <li>8. 이전 계산 결과가 있는 상태에서 바로 연산자 버튼을 누르면, 그 결과를 첫 값으로 사용해 계산을 이어갈 수 있습니다.</li>
         </ul>
     </div>
     </div>
@@ -236,8 +236,8 @@
         // 소수점 자릿수 계산 (3.0은 1자리, 3은 0자리)
         function getDecimalPlaces(numStr) {
             if (!numStr || numStr === '') return 0;
-            if (numStr.indexOf('.') === -1) return 0;
-            return numStr.split('.')[1].length;
+            if (numStr.toString().indexOf('.') === -1) return 0;
+            return numStr.toString().split('.')[1].length;
         }
 
         // 숫자 문자열을 숫자로 변환 (3.0 유지)
@@ -288,21 +288,19 @@
 
             if (valueInput === "" || uncertaintyInput === "") {
                 if (lastResult && op) {
-                    values = [lastResult.value];
-                    uncertainties = [lastResult.uncertainty];
+                    values = [lastResult.value.toString()];
+                    uncertainties = [lastResult.uncertainty.toString()];
                     operations = [op];
                     calculationHistory = `(${lastResult.value} ± ${lastResult.uncertainty}) ${op} `;
                     document.getElementById("calculation-process").innerText = calculationHistory;
-
-                    // 결과창도 초기화
                     document.getElementById("result").innerText = "";
-
                     clearInputs();
-                    return; // 바로 return 해서 중복 append 막기
+                    lastResult = null; // lastResult 사용 후 초기화
+                    return;
                 }
                 else if (op && values.length > 0 && operations.length === values.length -1) {
                     operations[operations.length - 1] = op;
-                    calculationHistory = calculationHistory.substring(0, calculationHistory.length - 2) + `${op} `;
+                    calculationHistory = calculationHistory.trim().slice(0, -1).trim() + ` ${op} `;
                     document.getElementById("calculation-process").innerText = calculationHistory;
                 }
                 return;
@@ -317,11 +315,7 @@
             }
             
             if (lastResult) {
-                values = [];
-                uncertainties = [];
-                operations = [];
-                calculationHistory = "";
-                lastResult = null;
+                clearAll();
             }
 
             values.push(currentValue);
@@ -331,6 +325,35 @@
             calculationHistory += `(${currentValue} ± ${currentUncertainty}) ${op} `;
             document.getElementById("calculation-process").innerText = calculationHistory;
             clearInputs();
+            document.getElementById("value").focus();
+        }
+
+        // [새 기능] 지우기 함수
+        function backspace() {
+            if (lastResult) {
+                clearAll();
+                return;
+            }
+            // 마지막이 연산자인 경우
+            if (values.length > 0 && values.length === operations.length) {
+                operations.pop();
+                calculationHistory = calculationHistory.trim().slice(0, -1).trim() + ' ';
+            } 
+            // 마지막이 숫자 그룹인 경우
+            else if (values.length > 0) {
+                values.pop();
+                uncertainties.pop();
+                let lastOpIndex = calculationHistory.trim().lastIndexOf(' ');
+                calculationHistory = calculationHistory.substring(0, lastOpIndex).trim() + ' ';
+                if(operations.length > 0) {
+                   calculationHistory = calculationHistory.substring(0, calculationHistory.lastIndexOf(' ')).trim() + ' ';
+                } else {
+                   calculationHistory = "";
+                }
+            }
+            
+            document.getElementById("calculation-process").innerText = calculationHistory;
+            document.getElementById("result").innerText = "";
             document.getElementById("value").focus();
         }
 
@@ -351,19 +374,25 @@
                 calculationHistory += `(${val} ± ${unc})`;
                 document.getElementById("calculation-process").innerText = calculationHistory;
                 clearInputs();
-            } else if (values.length === operations.length && values.length > 0) {
+            } else if (values.length > 0 && values.length === operations.length) {
                 alert("계산을 완료하려면 마지막 숫자를 입력하거나, 마지막 연산자를 제거하세요.");
                 return;
             }
+            
+            if (values.length === 0) return;
 
-            if (values.length < 2 && operations.length < 1 && values.length === 1) {
+            if (values.length === 1 && operations.length === 0) {
                 lastResult = { 
-                    value: values[0], 
-                    uncertainty: uncertainties[0] 
+                    value: parseNumber(values[0]), 
+                    uncertainty: parseNumber(uncertainties[0]) 
                 };
-                document.getElementById("result").innerText = `(${values[0]} ± ${uncertainties[0]})`;
+                document.getElementById("result").innerText = `(${lastResult.value} ± ${lastResult.uncertainty})`;
+                // 계산 과정은 이미 있으므로 그대로 둠
+                values = [];
+                uncertainties = [];
                 return;
             }
+
 
             if (values.length !== operations.length + 1) {
                 alert("계산식의 숫자와 연산자 개수가 맞지 않습니다.");
@@ -384,8 +413,9 @@
                 let op = operations[i];
                 let resultValue, resultUncertainty;
 
-                calculationSteps += `단계 ${i+1}: (${currentValStr} ± ${currentUncStr}) ${op} (${nextValStr} ± ${nextUncStr})\n`;
+                calculationSteps += `\n\n단계 ${i+1}: (${currentValStr} ± ${currentUncStr}) ${op} (${nextValStr} ± ${nextUncStr})`;
 
+                // [수정 없음] 사용자가 제공한 원본 계산 로직
                 if (op === '+' || op === '−') {
                     resultValue = (op === '+') ? currentVal + nextVal : currentVal - nextVal;
 
@@ -393,18 +423,18 @@
                     let relUnc2 = nextUnc / Math.abs(nextVal);
                     resultUncertainty = (relUnc1 + relUnc2) * Math.abs(resultValue);
 
-                    const decPlaces1 = getDecimalPlaces(currentValStr.toString());
-                    const decPlaces2 = getDecimalPlaces(nextValStr.toString());
+                    const decPlaces1 = getDecimalPlaces(currentValStr);
+                    const decPlaces2 = getDecimalPlaces(nextValStr);
                     const minDecimals = Math.min(decPlaces1, decPlaces2);
 
-                    calculationSteps += `계산값: ${resultValue}\n`;
-                    calculationSteps += `소수점 자릿수: ${currentValStr}(${decPlaces1}), ${nextValStr}(${decPlaces2}) → ${minDecimals}\n`;
+                    calculationSteps += `\n계산값: ${resultValue}`;
+                    calculationSteps += `\n소수점 자릿수: ${currentValStr}(${decPlaces1}), ${nextValStr}(${decPlaces2}) → ${minDecimals}`;
 
                     resultValue = roundToEvenStrict(resultValue, minDecimals);
 
-                    calculationSteps += `반올림 후 값: ${resultValue}\n`;
-                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}\n`;
-                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
+                    calculationSteps += `\n반올림 후 값: ${resultValue}`;
+                    calculationSteps += `\n상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}`;
+                    calculationSteps += `\n절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}`;
                 } else if (op === '×' || op === '÷') {
                     if (op === '÷' && nextVal === 0) {
                         alert("0으로 나눌 수 없습니다.");
@@ -418,14 +448,17 @@
                     let relUnc2 = nextUnc / Math.abs(nextVal);
                     resultUncertainty = (relUnc1 + relUnc2) * Math.abs(resultValue);
 
-                    const sigFigs1 = getSignificantFigures(currentValStr.toString());
-                    const sigFigs2 = getSignificantFigures(nextValStr.toString());
+                    const sigFigs1 = getSignificantFigures(currentValStr);
+                    const sigFigs2 = getSignificantFigures(nextValStr);
                     const minSigFigs = Math.min(sigFigs1, sigFigs2);
+                    
+                    calculationSteps += `\n값 = ${currentVal} ${op} ${nextVal} = ${resultValue}`;
                     resultValue = roundToSignificantFigures(resultValue, minSigFigs);
+                    calculationSteps += `\n유효숫자: ${currentValStr}(${sigFigs1}), ${nextValStr}(${sigFigs2}) → ${minSigFigs}`;
+                    calculationSteps += `\n반올림 후 값: ${resultValue}`;
 
-                    calculationSteps += `값 = ${currentVal} ${op} ${nextVal} = ${resultValue}\n`;
-                    calculationSteps += `상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}\n`;
-                    calculationSteps += `절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}\n\n`;
+                    calculationSteps += `\n상대불확도 = (${currentUnc}/${Math.abs(currentVal)}) + (${nextUnc}/${Math.abs(nextVal)}) = ${relUnc1.toFixed(5)} + ${relUnc2.toFixed(5)} = ${(relUnc1 + relUnc2).toFixed(5)}`;
+                    calculationSteps += `\n절대불확도 = ${(relUnc1 + relUnc2).toFixed(5)} × ${Math.abs(resultValue)} = ${resultUncertainty}`;
                 }
 
                 currentVal = resultValue;
@@ -454,19 +487,29 @@
 
         function getSignificantFigures(numStr) {
             if (!numStr) return 1;
-            const num = parseFloat(numStr);
+            const str = numStr.toString();
+            const num = parseFloat(str);
             if (num === 0) return 1;
             
-            // 소수점 이하 끝의 0도 유효숫자로 간주 (3.0은 2자리)
-            const str = numStr.replace('.', '').replace(/^0+/, '');
-            return str.length;
+            let sigFigs = 0;
+            if(str.includes('.')){
+                let nonZeroFound = false;
+                for(let i = 0; i < str.length; i++){
+                    if(str[i] === '.') continue;
+                    if(str[i] !== '0') nonZeroFound = true;
+                    if(nonZeroFound) sigFigs++;
+                }
+                return sigFigs;
+            } else {
+                return str.replace(/^0+/, '').length;
+            }
         }
 
         function roundToSignificantFigures(num, sigFigs) {
-            if (num === 0 || sigFigs < 1) return 0;
+            if (num === 0 || sigFigs < 1 || !isFinite(num)) return num;
             const magnitude = Math.floor(Math.log10(Math.abs(num)));
-            const factor = 10 ** (sigFigs - magnitude - 1);
-            return Math.round(num * factor) / factor;
+            const scale = Math.pow(10, sigFigs - magnitude - 1);
+            return Math.round(num * scale) / scale;
         }
 
         function setUncertainty(value) {
@@ -512,7 +555,12 @@
             const valueInput = document.getElementById("value");
             const uncertaintyInput = document.getElementById("uncertainty");
 
-            function handleKeyPress(event) {
+            function handleKeyDown(event) {
+                // [새 기능] 입력창이 비었을 때 Backspace 키를 누르면 backspace() 함수 실행
+                if (event.key === "Backspace" && document.activeElement.value === "") {
+                    event.preventDefault();
+                    backspace();
+                }
                 if (event.key === "Enter") {
                     event.preventDefault();
                     calculate();
@@ -532,26 +580,18 @@
                     event.preventDefault();
                     clearAll();
                 }
-            }
-
-            if(valueInput) {
-                valueInput.addEventListener("keypress", handleKeyPress);
-                valueInput.addEventListener("keydown", (e) => {
-                    if (e.key === "Tab") {
-                        e.preventDefault();
+                 else if (event.key === "Tab") {
+                    event.preventDefault();
+                    if (document.activeElement === valueInput) {
                         uncertaintyInput.focus();
-                    }
-                });
-            }
-            if(uncertaintyInput) {
-                uncertaintyInput.addEventListener("keypress", handleKeyPress);
-                uncertaintyInput.addEventListener("keydown", (e) => {
-                    if (e.key === "Tab") {
-                        e.preventDefault();
+                    } else {
                         valueInput.focus();
                     }
-                });
+                }
             }
+
+            if(valueInput) valueInput.addEventListener("keydown", handleKeyDown);
+            if(uncertaintyInput) uncertaintyInput.addEventListener("keydown", handleKeyDown);
         });
     </script>
 </body>
