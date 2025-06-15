@@ -88,6 +88,26 @@
         tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
         svg: { fontCache: 'global' }
     };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="result-title">희석 후 용액의 농도</div>
+        <div class="result-value">
+            <span class="value-box" id="finalConcValue"></span>
+            <span class="plus-minus">±</span>
+            <span class="value-box" id="finalConcUncertainty"></span>
+            <span class="unit">M</span>
+        </div>
+
+        <!-- 계산 과정 보여줄 박스 -->
+        <div id="calculationProcess"></div>
+
+        <button class="back-btn" onclick="window.location.href='calculsel.html'">돌아가기</button>
+    </div>
+
     <script>
         // localStorage에서 값 가져오기
         const C1 = parseFloat(localStorage.getItem('C1'));       // 희석 전 용액의 농도
