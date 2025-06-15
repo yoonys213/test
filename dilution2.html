@@ -88,36 +88,19 @@
         tex: { inlineMath: [['\\(', '\\)'], ['$', '$']] },
         svg: { fontCache: 'global' }
     };
-    </script>
-    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-
-</head>
-<body>
-    <div class="container">
-        <div class="result-title">희석 후 용액의 농도</div>
-        <div class="result-value">
-            <span class="value-box" id="finalConcValue"></span>
-            <span class="plus-minus">±</span>
-            <span class="value-box" id="finalConcUncertainty"></span>
-            <span class="unit">M</span>
-        </div>
-
-        <!-- 계산 과정 보여줄 박스 -->
-        <div id="calculationProcess"></div>
-
-        <button class="back-btn" onclick="window.location.href='calculsel.html'">돌아가기</button>
-    </div>
-
     <script>
         // localStorage에서 값 가져오기
         const C1 = parseFloat(localStorage.getItem('C1'));       // 희석 전 용액의 농도
         const alpha = parseFloat(localStorage.getItem('alpha')); // 불확도 (농도)
         const V1 = parseFloat(localStorage.getItem('V1'));       // 희석 전 용액의 부피
-        const beta = parseFloat(localStorage.getItem('beta'));   // 불확도 (V1)
+        const betaRaw = parseFloat(localStorage.getItem('beta'));   // 불확도 (V1)
         const V2 = parseFloat(localStorage.getItem('V2'));       // 희석 후 용액의 부피
         const k = parseFloat(localStorage.getItem('k')); //희석횟수(k)
         const gammaRaw = parseFloat(localStorage.getItem('gamma')); // 불확도 (V2)
         const gamma = gammaRaw * k;
+        const dn = parseFloat(localStorage.getItem('dn')); // 희석 전 용액 측정횟수
+        
+        const beta = betaRaw * dn; // 전체 불확도 = 단일 불확도 × 측정 횟수
         
 
         // 값 없으면 경고 및 이전 페이지로
@@ -127,6 +110,7 @@
         if (isNaN(alpha)) missingValues.push("α (C1의 불확도)");
         if (isNaN(V1)) missingValues.push("V1 (원액 부피)");
         if (isNaN(beta)) missingValues.push("β (V1의 불확도)");
+        if (isNaN(dn)) missingValues.push("dn (희석 전 용액 측정횟수)");
         if (isNaN(V2)) missingValues.push("V2 (최종 부피)");
         if (isNaN(gamma)) missingValues.push("γ (V2의 불확도)");
         if (isNaN(k)) missingValues.push("k (희석 계수)");
@@ -203,7 +187,9 @@
     <li>희석 전 용액의 부피 (V₁): ${V1}</li>
     <li>희석 후 전체 용액의 부피 (V₂): ${V2}</li>
     <li>C₁의 불확도 (α): ${alpha}</li>
-    <li>V₁의 불확도 (β): ${beta}</li>
+    <li>단일 측정의 불확도 (β): ${betaRaw}</li>
+    <li>희석 전 용액 측정횟수 (dn): ${dn}</li>
+    <li>V₁의 전체 불확도: ${betaRaw} × ${dn} = ${beta.toFixed(6)}</li>
     <li>희석 횟수 (k): ${k}</li>
     <li>V₂의 불확도 (γ): ${gammaRaw} × ${k} = ${gamma.toFixed(6)}</li>
 </ul>
