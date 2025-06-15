@@ -221,13 +221,13 @@
             localStorage.setItem('selectedTool', currentTool);
             localStorage.setItem('selectedVolume', vol);
             localStorage.setItem('standardSolutionVolume', vol); // 이 줄 추가!
-            localStorage.setItem('titration_V2', vol);
+           
             const uncertainties = volumeData[currentTool][vol];
             if (uncertainties.length === 1) {
-                selectedUncertainty = uncertainties[0];
+                selectedUncertainty = uncertainties[0]*2;
                 localStorage.setItem(`uncertainty_${currentTool}_${vol}`, selectedUncertainty);
                 localStorage.setItem('titration_theta', selectedUncertainty);
-                alert(`${vol}mL 피펫의 불확도 ±${selectedUncertainty}로 자동 설정됨`);
+                alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${uncertainties[0]} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
                 location.href = 'titration_step4.html';
             } else {
                 showUncertaintySelection(uncertainties);
@@ -244,11 +244,11 @@
                 btn.className = 'tool-btn';
                 btn.textContent = `±${unc}`;
                 btn.onclick = () => {
-                    selectedUncertainty = unc;
+                    selectedUncertainty = unc*2;
                     
                     localStorage.setItem(`uncertainty_${currentTool}_${selectedVolume}`, selectedUncertainty);
                     localStorage.setItem('titration_theta', selectedUncertainty);
-                    alert(`${selectedVolume}mL 피펫의 불확도 ±${selectedUncertainty} 선택됨`);
+                    alert(`피펫은 눈금 측정을 두 번하기 때문에\n불확도 ±${uncertainties[0]} × 2 = ±${selectedUncertainty}로 적용됩니다.`);
                     location.href = 'titration_step4.html';
                 
                 };
