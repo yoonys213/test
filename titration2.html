@@ -214,54 +214,37 @@
         // 계산 과정 표시 함수
         function displayCalculationProcess({ numerator, denominator, relUnc, H, deltaH }) {
     const container = document.getElementById('calculationProcess');
-    const effectiveTheta = theta * t_n;
+
+    const formatted = formatValueWithUncertainty(H, deltaH);
+    const roundedH = formatted.value;
+    const roundedDeltaH = formatted.uncertainty;
 
     container.innerHTML = `
-        <h3>계산 과정</h3>
-
-        <p><strong>1. 입력 값</strong></p>
-        <ul>
-            <li>표준 용액의 농도 (M): ${M}</li>
-            <li>표준 용액의 부피 (V₁): ${V1}</li>
-            <li>미지 용액의 부피 (V₂): ${V2}</li>
-            <li>표준 용액의 가수 (n₁): ${n1}</li>
-            <li>미지 용액의 가수 (n₂): ${n2}</li>
-            <li>채취 횟수 (t_n): ${t_n}</li>
-        </ul>
-
-        <p><strong>2. 미지 용액 농도 계산</strong></p>
-        <p>
-            \\[
-            [M] = \\frac{M \\cdot V_1 \\cdot n_2}{V_2 \\cdot n_1}
-                 = \\frac{${M} \\cdot ${V1} \\cdot ${n2}}{${V2} \\cdot ${n1}}
-                 = \\frac{${numerator.toFixed(4)}}{${denominator.toFixed(4)}}
-                 = ${H.toFixed(6)}
-            \\]
-        </p>
-
-        <p><strong>3. 상대 불확도 계산</strong></p>
-        <p>
-            \\[
-            \\text{상대 불확도} = \\frac{\\alpha}{M} + \\frac{\\beta}{V_1} + \\frac{\\theta \\times t_n}{V_2}
-                               = \\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${theta} \\times ${t_n}}{${V2}}
-                               = ${relUnc.toFixed(6)}
-            \\]
-        </p>
-
-        <p><strong>4. 절대 불확도 계산</strong></p>
-        <p>
-            \\[
-            \\Delta M = [M] \\times \\text{상대 불확도}
-                     = ${H.toFixed(6)} \\times ${relUnc.toFixed(6)}
-                     = \\boxed{${deltaH.toFixed(6)}}
-            \\]
-        </p>
-    `;
+    <ul>    
+        <li style="list-style: none;">입력값</li>
+        <li style="list-style: none;">농도를 아는 용액의 농도 : (${M} ± ${alpha}) M</li>
+        <li style="list-style: none;">농도를 아는 용액의 부피 : (${V1} ± ${beta}) mL</li>
+        <li style="list-style: none;">농도를 아는 용액의 가수 : ${n1}</li>
+        <li style="list-style: none;">농도를 모르는 용액의 부피 : (${V2} ± ${effectiveTheta}(= ${t_n}(채취 횟수) &times; ${theta})) mL</li>
+        <li style="list-style: none;">농도를 모르는 용액의 채취 횟수 : ${t_n}</li>
+        <li style="list-style: none;">농도를 모르는 용액의 가수 : ${n2}</li>
+    </ul>
+    <ul>
+        <li style="list-style: none;">미지용액의 농도 (M)</li>
+    </ul>
+    \\[ = \\frac{(${M} \\pm ${alpha}) \\text{ M} \\times (${V1} \\pm ${beta}) \\text{ mL} \\times ${n1}}{(${V2} \\pm ${effectiveTheta})\\text{mL} \\times ${n2}} \\]
+    \\[ = \\frac{${n1} \\times (${M} \\pm \\frac{${alpha}}{${M}}) \\times (${V1} \\pm \\frac{${beta}}{${V1}})}{${n2} \\times (${V2} \\pm \\frac{${effectiveTheta}}{${V2}})} \\]
+    \\[ = \\frac{${n1} \\times ${M} \\times ${V1}}{${n2} \\times ${V2}} \\pm (\\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${effectiveTheta}}{${V2}}) \\]
+    \\[ = \\frac{${n1} \\times ${M} \\times ${V1}}{${n2} \\times ${V2}} \\pm (\\frac{${alpha}}{${M}} + \\frac{${beta}}{${V1}} + \\frac{${effectiveTheta}}{${V2}}) \\times \\frac{${n1} \\times ${M} \\times ${V1}}{${n2} \\times ${V2}} \\]
+    \\[ = ${H} \\pm ${roundedDeltaH} \\text{ M} \\]
+    \\[ = ${roundedH} \\pm ${roundedDeltaH} \\text{ M} \\]
+`;
 
     if (window.MathJax) {
         MathJax.typeset();
     }
 }
+
 
         // 결과 표시
         function displayResults() {
