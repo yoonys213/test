@@ -208,8 +208,7 @@
     }
 
     /**
-     * [NEW] 계산 과정의 숫자에서 불필요한 후행 0을 제거하는 함수
-     * 예: 0.002000 -> "0.002"
+     * 계산 과정의 숫자에서 불필요한 후행 0을 제거하는 함수
      */
     const trimZeros = (num, precision = 6) => Number(num.toFixed(precision)).toString();
 
@@ -230,12 +229,13 @@
       const vol = localStorage.getItem('selectedVolume');
       const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
 
-      const VL = V / 1000;
       const n = m / M;
-      const dn_raw = (alpha / m) * n;
-      const C = n / VL;
-      const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / VL));
-
+      const V_L = V / 1000;
+      const C = n / V_L;
+      
+      const rel_unc_m = alpha / m;
+      const rel_unc_V = (beta / 1000) / V_L;
+      const dC_raw = C * (rel_unc_m + rel_unc_V);
       const dC = roundUncertainty(dC_raw);
       const cFormatted = formatValueWithUncertainty(C, dC);
 
@@ -246,49 +246,53 @@
     }
 
     /**
-     * 계산 과정 표시 함수
+     * 계산 과정 표시 함수 (수정됨)
      */
     function showCalculationProcess(m, alpha, M, V, beta) {
-  // 계산
-  const n = m / M;
-  const dn_raw = alpha / m;
-  const dn = roundUncertainty(dn_raw);
+      // 1. 계산 과정에 필요한 모든 값 계산
+      const n_val = m / M;
+      const rel_unc_m = alpha / m;
+      const dn_val_raw = n_val * rel_unc_m;
 
-  const C = n / (V / 1000);
-  const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / (V / 1000)));
-  const dC = roundUncertainty(dC_raw);
+      const V_L = V / 1000;
+      const dV_L = beta / 1000;
+      const rel_unc_V = dV_L / V_L;
 
-  const nFormatted = formatValueWithUncertainty(n, dn);
-  const cFormatted = formatValueWithUncertainty(C, dC);
+      const C_val = n_val / V_L;
+      const rel_unc_C = rel_unc_m + rel_unc_V;
+      const dC_val_raw = C_val * rel_unc_C;
 
-  const processText = `
-     <ul>
-                입력값:
-        용질의 질량 m = ${m} ± ${alpha} g
-        화학식량 M = ${M} g/mol
-        용액 부피 V = ${V} ± ${beta} mL
-        (${m} ± ${alpha}) g , (${V} ± ${beta}) mL
-      </ul>
-      <ul>
-          용질의 양 (n) mol = (${m} ± ${alpha}) g / (${M}) g/mol
-      = (${m} / ${M} ± ${alpha} / ${m}) mol
-      = (${n}) ± (${dn}) mol
-      = (${nFormatted.value} ± ${nFormatted.uncertainty}) mol
-      </ul>        
-        ∴ n = (${nFormatted.value} ± ${nFormatted.uncertainty}) mol
-      <ul>
-        표준용액의 농도 (M) = {(${nFormatted.value} ± ${nFormatted.uncertainty}) mol} / (${V} ± ${beta})L / 1000 
-        = {(${nFormatted.value} ± ${nFormatted.uncertainty}) mol}/(${V}/1000 ± ${beta}/1000)
-        = (${nFormatted.value} ± ${nFormatted.uncertainty}/${nFormatted.value})/(${V}/1000 ± ${beta}/${V}) 
-        = ${nFormatted.value}/1/${V}/1000 ± (${nFormatted.uncertainty}/${nFormatted.value}+${beta}/${V})
-        = ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
-      </ul>
-    [M] = ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
-`;
+      // 2. 최종 결과 포매팅
+      const dn_final = roundUncertainty(dn_val_raw);
+      const n_final_formatted = formatValueWithUncertainty(n_val, dn_final);
+      const dC_final = roundUncertainty(dC_val_raw);
+      const C_final_formatted = formatValueWithUncertainty(C_val, dC_final);
 
-  document.getElementById('calculationProcess').innerHTML = processText;
-  MathJax.typeset();  // 수식 다시 렌더링
-}
+      // 3. HTML 텍스트 생성
+      const processText = `
+        <div style="text-align:left; padding-left: 15px; line-height: 1.8;">
+            <p><strong>1. 용질의 양 (n) 계산</strong></p>
+            \\[ n = \\frac{m}{M} = \\frac{${m} \\text{ g}}{${M} \\text{ g/mol}} = ${trimZeros(n_val)} \\text{ mol} \\]
+            \\[ \\Delta n = n \\times \\frac{\\alpha}{m} = ${trimZeros(n_val)} \\times \\frac{${alpha}}{${m}} = ${trimZeros(dn_val_raw)} \\text{ mol} \\]
+            <p style="text-align:center; font-weight:bold; font-size:1.2em;">
+                ∴ n = ${n_final_formatted.value} ± ${n_final_formatted.uncertainty} mol
+            </p>
+            <hr style="border-color: #eee; margin: 20px 0;">
+            <p><strong>2. 표준용액의 농도 (C) 계산</strong></p>
+            \\[ C = \\frac{n}{V_L} = \\frac{${trimZeros(n_val)} \\text{ mol}}{${trimZeros(V_L)} \\text{ L}} = ${trimZeros(C_val)} \\text{ mol/L} \\]
+            
+            \\[ \\frac{\\Delta C}{C} = \\frac{\\Delta n}{n} + \\frac{\\Delta V_L}{V_L} = \\frac{\\alpha}{m} + \\frac{\\beta / 1000}{V / 1000} \\]
+            \\[ \\frac{\\Delta C}{C} = ${trimZeros(rel_unc_m)} + ${trimZeros(rel_unc_V)} = ${trimZeros(rel_unc_C)} \\]
+            \\[ \\Delta C = C \\times \\left( \\frac{\\Delta C}{C} \\right) = ${trimZeros(C_val)} \\times ${trimZeros(rel_unc_C)} = ${trimZeros(dC_val_raw)} \\text{ mol/L} \\]
+             <p style="text-align:center; font-weight:bold; font-size:1.2em;">
+                ∴ C = ${C_final_formatted.value} ± ${C_final_formatted.uncertainty} mol/L
+            </p>
+        </div>
+      `;
+
+      document.getElementById('calculationProcess').innerHTML = processText;
+      MathJax.typesetPromise();
+    }
 
 
     /**
@@ -303,15 +307,16 @@
       const vol = localStorage.getItem('selectedVolume');
       const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
 
-      // 최종 결과 계산
+      // --- 최종 결과 계산 (논리 오류 수정) ---
       const n = m / M;
-      const dn_raw = (alpha / m) ;
+      const dn_raw = n * (alpha / m); // 몰의 절대 불확도
       const dn = roundUncertainty(dn_raw);
 
-      const C = n / (V / 1000);
-      const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / (V / 1000)));
+      const V_L = V / 1000;
+      const C = n / V_L;
+      const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / V_L)); // 농도의 절대 불확도
       const dC = roundUncertainty(dC_raw);
-
+      
       const nFormatted = formatValueWithUncertainty(n, dn);
       const cFormatted = formatValueWithUncertainty(C, dC);
 
