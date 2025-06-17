@@ -47,7 +47,7 @@
     .back-btn:hover {
       background-color: #f0f0f0;
     }
-    
+
     .submit-btn {
       padding: 15px 30px;
       font-size: 25px;
@@ -148,169 +148,187 @@
 
     </head>
 <body>
-  
+
   <div class="container">
     <div class="result-title">계산 결과</div>
-    <div id="results"></div>
-    <div id="debug" class="debug-info"></div>
-    <div id="results"></div>
-    <div id="calculationProcess" class="calculation-process"></div> 
+    <div id="results"></div> <div id="debug" class="debug-info"></div>
+    <div id="calculationProcess" class="calculation-process"></div>
     <button class="go-dilution-btn" onclick="goToDilution()"></button>
     <div class="go-dilution-label">바로 희석으로 가기</div>
     <button class="back-btn" onclick="window.location.href='calculsel.html'">돌아가기</button>
   </div>
 
-  <script>
-  // ————————————————
-  // 1) 은행가 반올림 함수
-  // ————————————————
-  function roundHalfToEven(val, digits) {
-    const factor = 10 ** digits;
-    const x = val * factor;
-    const i = Math.floor(x);
-    const f = x - i;
-    if (Math.abs(f - 0.5) < 1e-12) {
-      return ((i % 2 === 0 ? i : i + 1) / factor);
+   <script>
+    // ————————————————
+    // 헬퍼 함수들 (Helper Functions)
+    // ————————————————
+
+    /**
+     * 은행가 반올림 (Round half to even)
+     */
+    function roundHalfToEven(val, digits) {
+      const factor = 10 ** digits;
+      const x = val * factor;
+      const i = Math.floor(x);
+      const f = x - i;
+      if (Math.abs(f - 0.5) < 1e-12) {
+        return ((i % 2 === 0 ? i : i + 1) / factor);
+      }
+      return Math.round(x) / factor;
     }
-    return Math.round(x) / factor;
-  }
 
-  // ————————————————
-  // 2) 불확도: 유효숫자 한 자리 + 은행가 반올림
-  // ————————————————
-  function roundUncertainty(u) {
-    if (u === 0) return 0;
-    const exponent = Math.floor(Math.log10(Math.abs(u)));
-    const scale = 10 ** exponent;
-    const scaled = u / scale;
-    const rounded = roundHalfToEven(scaled, 1);
-    return rounded * scale;
-  }
+    /**
+     * 불확도를 유효숫자 한 자리에 맞춰 반올림
+     */
+    function roundUncertainty(u) {
+      if (u === 0) return 0;
+      const exponent = Math.floor(Math.log10(Math.abs(u)));
+      const scale = 10 ** exponent;
+      const scaled = u / scale;
+      const rounded = roundHalfToEven(scaled, 1);
+      return rounded * scale;
+    }
 
-  // ————————————————
-  // 3) 값과 불확도의 자릿수 맞춤
-  // ————————————————
-  function formatValueWithUncertainty(value, uncertainty) {
-    if (uncertainty === 0) return value.toFixed(2);
-    const uncertExponent = Math.floor(Math.log10(Math.abs(uncertainty)));
-    const digits = Math.max(0, -uncertExponent);
-    const roundedValue = roundHalfToEven(value, digits);
-    const roundedUncert = roundHalfToEven(uncertainty, digits);
-    return {
-      value: roundedValue.toFixed(digits),
-      uncertainty: roundedUncert.toFixed(digits)
+    /**
+     * 최종 값과 불확도의 소수점 자릿수를 맞춤 (예: 1.00 ± 0.01)
+     */
+    function formatValueWithUncertainty(value, uncertainty) {
+      if (uncertainty === 0) {
+        return { value: value.toString(), uncertainty: '0' };
+      }
+      const uncertExponent = Math.floor(Math.log10(Math.abs(uncertainty)));
+      const digits = Math.max(0, -uncertExponent);
+      const roundedValue = roundHalfToEven(value, digits);
+      const roundedUncert = roundHalfToEven(uncertainty, digits);
+
+      return {
+        value: roundedValue.toFixed(digits),
+        uncertainty: roundedUncert.toFixed(digits)
+      };
+    }
+
+    /**
+     * [NEW] 계산 과정의 숫자에서 불필요한 후행 0을 제거하는 함수
+     * 예: 0.002000 -> "0.002"
+     */
+    const trimZeros = (num, precision = 6) => Number(num.toFixed(precision)).toString();
+
+
+    // ————————————————
+    // 페이지 기능 함수들 (Page Functions)
+    // ————————————————
+
+    /**
+     * "바로 희석으로 가기" 버튼 기능
+     */
+    function goToDilution() {
+      const m = parseFloat(localStorage.getItem('standard_m'));
+      const alpha = parseFloat(localStorage.getItem('standard_alpha'));
+      const M = parseFloat(localStorage.getItem('standard_c'));
+      const V = parseFloat(localStorage.getItem('standardSolutionVolume'));
+      const tool = localStorage.getItem('selectedTool');
+      const vol = localStorage.getItem('selectedVolume');
+      const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
+
+      const VL = V / 1000;
+      const n = m / M;
+      const dn_raw = (alpha / m) * n;
+      const C = n / VL;
+      const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / VL));
+
+      const dC = roundUncertainty(dC_raw);
+      const cFormatted = formatValueWithUncertainty(C, dC);
+
+      localStorage.setItem('C1', parseFloat(cFormatted.value));
+      localStorage.setItem('alpha', parseFloat(cFormatted.uncertainty));
+
+      location.href = "dilution_step1.5.html";
+    }
+
+    /**
+     * 계산 과정 표시 함수
+     */
+    function showCalculationProcess(m, alpha, M, V, beta) {
+  // 계산
+  const n = m / M;
+  const dn_raw = alpha / m;
+  const dn = roundUncertainty(dn_raw);
+
+  const C = n / (V / 1000);
+  const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / (V / 1000)));
+  const dC = roundUncertainty(dC_raw);
+
+  const nFormatted = formatValueWithUncertainty(n, dn);
+  const cFormatted = formatValueWithUncertainty(C, dC);
+
+  const processText = `
+     <ul>
+                입력값:
+        용질의 질량 m = ${m} ± ${alpha} g
+        화학식량 M = ${M} g/mol
+        용액 부피 V = ${V} ± ${beta} mL
+        (${m} ± ${alpha}) g , (${V} ± ${beta}) mL
+      </ul>
+      <ul>
+          용질의 양 (n) mol = (${m} ± ${alpha}) g / (${M}) g/mol
+      = (${m} / ${M} ± ${alpha} / ${m}) mol
+      = (${n}) ± (${dn}) mol
+      = (${nFormatted.value} ± ${nFormatted.uncertainty}) mol
+      </ul>        
+        ∴ n = (${nFormatted.value} ± ${nFormatted.uncertainty}) mol
+      <ul>
+        표준용액의 농도 (M) = {(${nFormatted.value} ± ${nFormatted.uncertainty}) mol} / (${V} ± ${beta})L / 1000 
+        = {(${nFormatted.value} ± ${nFormatted.uncertainty}) mol}/(${V}/1000 ± ${beta}/1000)
+        = (${nFormatted.value} ± ${nFormatted.uncertainty}/${nFormatted.value})/(${V}/1000 ± ${beta}/${V}) 
+        = ${nFormatted.value}/1/${V}/1000 ± (${nFormatted.uncertainty}/${nFormatted.value}+${beta}/${V})
+        = ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
+      </ul>
+    [M] = ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
+`;
+
+  document.getElementById('calculationProcess').innerHTML = processText;
+  MathJax.typeset();  // 수식 다시 렌더링
+}
+
+
+    /**
+     * 페이지 로딩 시 실행
+     */
+    window.onload = function () {
+      const m = parseFloat(localStorage.getItem('standard_m'));
+      const alpha = parseFloat(localStorage.getItem('standard_alpha'));
+      const M = parseFloat(localStorage.getItem('standard_c'));
+      const V = parseFloat(localStorage.getItem('standardSolutionVolume'));
+      const tool = localStorage.getItem('selectedTool');
+      const vol = localStorage.getItem('selectedVolume');
+      const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
+
+      // 최종 결과 계산
+      const n = m / M;
+      const dn_raw = (alpha / m) ;
+      const dn = roundUncertainty(dn_raw);
+
+      const C = n / (V / 1000);
+      const dC_raw = C * ((dn_raw / n) + ((beta / 1000) / (V / 1000)));
+      const dC = roundUncertainty(dC_raw);
+
+      const nFormatted = formatValueWithUncertainty(n, dn);
+      const cFormatted = formatValueWithUncertainty(C, dC);
+
+      // 최종 결과 표시
+      document.getElementById('results').innerHTML = `
+        <div class="result">
+          <strong>용질의 양 (mol):</strong> ${nFormatted.value} ± ${nFormatted.uncertainty} mol
+        </div>
+        <div class="result">
+          <strong>표준용액 농도 (M):</strong> ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
+        </div>
+      `;
+
+      // 계산 과정 표시
+      showCalculationProcess(m, alpha, M, V, beta);
     };
-  }
-
-  // ————————————————
-  // 4) "바로 희석으로 가기" 버튼 클릭 시 실행되는 함수
-  // ————————————————
-  function goToDilution() {
-    const m = parseFloat(localStorage.getItem('standard_m'));
-    const alpha = parseFloat(localStorage.getItem('standard_alpha'));
-    const M = parseFloat(localStorage.getItem('standard_c'));
-    const V = parseFloat(localStorage.getItem('standardSolutionVolume'));
-    const tool = localStorage.getItem('selectedTool');
-    const vol = localStorage.getItem('selectedVolume');
-    const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
-
-    const VL = V / 1000;
-    const dVL = beta / 1000;
-    const n = m / M;
-    const relUncert_m = alpha / m;
-    const dn_raw = relUncert_m * n;
-    const dn = roundUncertainty(dn_raw);
-    const C = n / VL;
-    const relUncert_C = (dn / n) + (dVL / VL);
-    const dC_raw = C * relUncert_C;
-    const dC = roundUncertainty(dC_raw);
-    const cFormatted = formatValueWithUncertainty(C, dC);
-
-    localStorage.setItem('C1', parseFloat(cFormatted.value));
-    localStorage.setItem('alpha', parseFloat(cFormatted.uncertainty));
-
-    location.href = "dilution_step2.html";
-  }
-
-  // ————————————————
-  // 5) 계산 과정 표시 함수
-  // ————————————————
-  function showCalculationProcess(m, alpha, M, V, beta, n, dn, C, dC) {
-    const VL = V / 1000;
-    const dVL = beta / 1000;
-    
-    const processText = `
-<p><strong>1. 입력값</strong></p>
-<ul>
-  <li>용질 질량 (m): ${m} ± ${alpha} g</li>
-  <li>화학식량 (M): ${M} g/mol</li>
-  <li>용액 부피 (V): ${V} ± ${beta} mL</li>
-</ul>
-
-<p><strong>2. 용질의 양 계산</strong><br>
-\\[
-n = \\frac{m}{M} = \\frac{${m}}{${M}} = ${n.toFixed(6)} \\text{ mol}
-\\]
-불확도: \\[\\Delta n = n \\times \\frac{\\alpha}{m} = ${n.toFixed(6)} \\times \\frac{${alpha}}{${m}} = ${dn.toFixed(6)} \\text{ mol}\\]
-</p>
-
-<p><strong>3. 표준용액 농도 계산</strong><br>
-\\[
-C = \\frac{n}{V_L} = \\frac{${n.toFixed(6)}}{${VL.toFixed(6)}} = ${C.toFixed(6)} \\text{ mol/L}
-\\]
-</p>
-
-<p><strong>4. 농도 불확도 계산</strong><br>
-\\[
-\\Delta C = C \\times \\left(\\frac{\\Delta n}{n} + \\frac{\\Delta V_L}{V_L}\\right) 
-= ${C.toFixed(6)} \\times \\left(\\frac{${dn.toFixed(6)}}{${n.toFixed(6)}} + \\frac{${dVL.toFixed(6)}}{${VL.toFixed(6)}}\\right) 
-= ${dC.toFixed(6)} \\text{ mol/L}
-\\]
-</p>`;
-
-    document.getElementById('calculationProcess').innerHTML = processText;
-    MathJax.typeset();
-  }
-
-  // ————————————————
-  // 6) 페이지 로딩 시 계산 결과 표시
-  // ————————————————
-  window.onload = function () {
-    const m = parseFloat(localStorage.getItem('standard_m'));
-    const alpha = parseFloat(localStorage.getItem('standard_alpha'));
-    const M = parseFloat(localStorage.getItem('standard_c'));
-    const V = parseFloat(localStorage.getItem('standardSolutionVolume'));
-    const tool = localStorage.getItem('selectedTool');
-    const vol = localStorage.getItem('selectedVolume');
-    const beta = parseFloat(localStorage.getItem('uncertainty_' + tool + '_' + vol));
-
-    const VL = V / 1000;
-    const dVL = beta / 1000;
-    const n = m / M;
-    const relUncert_m = alpha / m;
-    const dn_raw = relUncert_m * n;
-    const dn = roundUncertainty(dn_raw);
-    const C = n / VL;
-    const relUncert_C = (dn / n) + (dVL / VL);
-    const dC_raw = C * relUncert_C;
-    const dC = roundUncertainty(dC_raw);
-
-    const nFormatted = formatValueWithUncertainty(n, dn);
-    const cFormatted = formatValueWithUncertainty(C, dC);
-
-    document.getElementById('results').innerHTML = `
-      <div class="result">
-        <strong>용질의 양 (mol):</strong> ${nFormatted.value} ± ${nFormatted.uncertainty} mol
-      </div>
-      <div class="result">
-        <strong>표준용액 농도 (M):</strong> ${cFormatted.value} ± ${cFormatted.uncertainty} mol/L
-      </div>
-    `;
-
-    // 계산 과정 표시
-    showCalculationProcess(m, alpha, M, V, beta, n, dn, C, dC);
-  };
-</script>
+  </script>
 </body>
 
 </html>
