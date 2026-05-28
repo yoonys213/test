@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>불확도</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;900&display=swap');
@@ -24,15 +24,18 @@
         }
         
         .content {
-            padding: 5%;
-            width: 90%;
+            padding: 5vh 10vw;
+            width: 100%;
             max-width: 800px;
             text-align: left;
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
         }
         
         h1 {
-            font-size: clamp(40px, 10vw, 90px);
-            margin: 0 0 3vh 0;
+            font-size: min(9vh, 11vw);
+            margin: 0 0 2vh 0;
             font-weight: 900;
             letter-spacing: -1px;
             line-height: 1;
@@ -40,16 +43,16 @@
         }
         
         .pronunciation {
-            font-size:  clamp(16px, 3vw, 26px);
-            margin-bottom: 5vh;
+            font-size: min(3vh, 4vw);
+            margin-bottom: 3vh;
             opacity: 0.8;
             font-weight: 300;
         }
         
         p {
-            font-size:  clamp(16px, 3.5vw, 22px);
-            line-height: 1.7;
-            margin: 3vh 0;
+            font-size: min(3vh, 4vw);
+            line-height: 1.5;
+            margin: 2vh 0;
             font-weight: 300;
         }
         
@@ -59,25 +62,24 @@
         
         .back-btn {
             position: absolute;
-            left: 3vw;
+            left: 5vw;
             top: 50%;
             transform: translateY(-50%);
             color: white;
-            font-size: clamp(40px, 8vw, 60px);
+            font-size: min(6vh, 8vw);
             font-weight: 900;
             cursor: pointer;
             background: transparent;
-            width: clamp(50px, 10vw, 80px);
-            height: clamp(50px, 10vw, 80px);
+            width: min(6vh, 8vw);
+            height: min(6vh, 8vw);
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            z-index: 10;
+            z-index: 2;
             border: none;
             outline: none;
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
-
         }
         
         .back-btn:hover {
